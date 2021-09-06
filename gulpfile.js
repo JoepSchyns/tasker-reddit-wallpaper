@@ -1,32 +1,61 @@
 const gulp = require('gulp');
-const concat = require('gulp-concat');
 const nodemon = require('gulp-nodemon');
-const uglify = require('gulp-uglify');
-const rename = require('gulp-rename');
 const fs = require('fs');
+const webpack = require('webpack-stream');
 
-gulp.task('preprocess', () =>
+
+gulp.task('build', (done) => gulp
+    .src('src/index.js')
+    .pipe(webpack({
+      mode: 'production',
+      output: {filename: 'index.min.js'},
+      externals:[
+        function ({ context, request }, callback) {
+          if (/tasker/i.test(request)) {
+            // Externalize to a commonjs module using the request path
+            return callback(null, 'this');
+          }
+    
+          // Continue without externalizing the import
+          callback();
+        },
+      ],
+    }))
+    .on('error',function (err) {
+      console.error('WEBPACK ERROR', err);
+      this.emit('end'); // Don't stop the rest of the task
+    })
+    .pipe(gulp.dest('./dist/'))
+)
+
+gulp.task('pack', () => 
   gulp
-  .src(['./src/Tasker.js', './src/index.js'])
-  .pipe(concat('index.js'))
+  .src('src/index.js')
+  .pipe(webpack({
+    optimization: {
+      minimize: false
+    },
+    target: 'node',
+    mode: 'development',
+    output: {filename: 'index.js'},
+    devtool: false,
+  }))
+  .on('error',function (err) {
+    console.error('WEBPACK ERROR', err);
+    this.emit('end'); // Don't stop the rest of the task
+  })
   .pipe(gulp.dest('./.tmp/'))
-);
-gulp.task('build', () => gulp
-    .src('./src/index.js')
-    .pipe(uglify())
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(gulp.dest('./dist/')),
-);
+)
 
 gulp.task(
   'serve',
-  gulp.series('preprocess', (done) => {
+  gulp.series('pack', (done) => {
     nodemon({
       script: './.tmp/index.js',
       ext: 'js html',
       env: { NODE_ENV: 'development' },
       ignore: ['dist'],
-      tasks: ['preprocess'],
+      tasks: ['pack'],
       done() {
         fs.rmdirSync('./.tmp', { recursive: true });
         done();
