@@ -5,10 +5,9 @@
   "scripts": {
     "start": "npm run serve",
     "live": "nodemon src/wallpaper.js --watch *.js",
-    "eslint:base": "eslint --ignore-path .gitignore",
-    "lint:eslint": "npm run eslint:base -- --max-warnings 0 \"**/*.{js,ts,tsx,mdx}\"",
-    "lint": "npm run lint:eslint",
-    "fix": "npm run eslint:base -- --fix \"**/*.{js,ts,tsx,mdx}\"",
+    "eslint": "eslint  --ignore-path .gitignore src/",
+    "lint": "npm run eslint",
+    "fix": "npm run eslint -- --fix",
     "serve": "gulp serve",
     "build": "gulp build"
   },

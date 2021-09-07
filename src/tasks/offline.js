@@ -1,33 +1,41 @@
-import {sendNotification, writePrevious, getCachedWithIds } from '../helpers/helpers.js'
-import { setWallpaper } from '../Tasker.js'
+import { flash, setWallpaper } from '../Tasker.js';
+import {
+    getCachedWithIds,
+    sendNotification,
+    writePrevious,
+} from '../helpers/helpers.js';
 
-
-export default (previous) => {
+const offline = (previous) => {
     const cached = getCachedWithIds();
     // Get wallpaper displayed longest ago
-    const nonnones = previous.filter((p) => !!p);
+    const nonnones = previous.filter((p) => Boolean(p));
     if (!cached.length || !previous.length) {
-      flash('Could not set offline wallpaper no cached image');
-      return previous;
+        flash('Could not set offline wallpaper no cached image');
+        return previous;
     }
     const last = nonnones.pop();
-  
+
     // Get file
     const cachedLast = cached.find(({ id }) => id === last.id);
     if (!cachedLast) {
-      offline(nonnones);
+        offline(nonnones);
     }
-  
+
     setWallpaper(cachedLast.filePath);
-    sendNotification(last.title, `https://reddit.premii.com/#${last.permalink}`);
-  
+    sendNotification(
+        last.title,
+        `https://reddit.premii.com/#${last.permalink}`
+    );
+
     // Save date displayed last
     last.displayedLast = Date.now();
-  
+
     // Update previous list
     nonnones.unshift(last);
-    nonnones.length = previous.length
+    nonnones.length = previous.length;
     writePrevious(nonnones);
-  
+
     return previous;
-  };
+};
+
+export default offline;
