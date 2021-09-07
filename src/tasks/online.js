@@ -1,9 +1,19 @@
+import {
+    IMAGE_PATH,
+    MAX_WALLPAPERS,
+    MIN_HEIGHT,
+    MIN_WIDTH,
+    REDDIT_CLIENT_BASE_URL,
+} from '../helpers/constants.js';
 import { fetch, global, setGlobal, setWallpaper, shell } from '../Tasker.js';
-import { sendNotification, writePrevious } from '../helpers/helpers.js';
+import {
+    isImage,
+    sendNotification,
+    writePrevious,
+} from '../helpers/functions.js';
 
-const isImage = ({ url }) => RegExp('.(jpg|png|jpeg)$', 'i').test(url);
-
-const isLargeEnough = ({ width, height }) => width >= 1080 && height >= 1920;
+const isLargeEnough = ({ width, height }) =>
+    width >= MIN_WIDTH && height >= MIN_HEIGHT;
 
 const getWallpaperPosts = async (after) => {
     const request = await fetch(
@@ -57,7 +67,7 @@ const downloadImage = (url, filePath, timeoutSec = 30) =>
         );
     });
 
-const online = async (previous, after) => {
+const online = async (previous = [], after) => {
     // GET previously used wallpapers and new current on reddit
     const [nextAfter, current] = await getWallpaperPosts(after);
 
@@ -80,13 +90,13 @@ const online = async (previous, after) => {
 
     // Get new wallpaper
     const [ext] = newWallpaper.url.match(/\.\w{3,4}($|\?)/);
-    const filePath = `Tasker/wallpaper/images/${newWallpaper.id}${ext}`;
+    const filePath = `${IMAGE_PATH}${newWallpaper.id}${ext}`;
     await downloadImage(newWallpaper.url, filePath);
 
     setWallpaper(filePath);
     sendNotification(
         newWallpaper.title,
-        `https://reddit.premii.com/#${newWallpaper.permalink}`
+        `${REDDIT_CLIENT_BASE_URL}${newWallpaper.permalink}`
     );
 
     // Save date displayed last
@@ -96,9 +106,9 @@ const online = async (previous, after) => {
     previous.unshift(newWallpaper);
     const wallpaperMemLength = global('%WallpaperMemLength');
     if (!wallpaperMemLength) {
-        setGlobal('%WallpaperMemLength', 1000);
+        setGlobal('%WallpaperMemLength', MAX_WALLPAPERS);
     }
-    previous.length = wallpaperMemLength || 1000;
+    previous.length = wallpaperMemLength || MAX_WALLPAPERS;
     writePrevious(previous);
     return previous;
 };

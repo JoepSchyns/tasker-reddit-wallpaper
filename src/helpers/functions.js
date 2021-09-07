@@ -1,6 +1,8 @@
+import { IMAGE_PATH, PREVIOUS_FILEPATH } from './constants.js';
 import { listFiles, performTask, readFile, writeFile } from '../Tasker.js';
 
-const PREVIOUS_FILEPATH = 'Tasker/wallpaper/previous.json';
+export const isImage = ({ url }) => RegExp('.(jpg|png|jpeg)$', 'i').test(url);
+
 export const readOrCreatePrevious = (path = PREVIOUS_FILEPATH) => {
     try {
         // Get previous from file and sort based on display date
@@ -30,7 +32,7 @@ export const sendNotification = (title, url) =>
     performTask('WallpaperNotification', 10, title, url);
 
 export const getCachedWithIds = () => {
-    const filesString = listFiles('Tasker/wallpaper/images');
+    const filesString = listFiles(IMAGE_PATH);
     if (!filesString) {
         return [];
     }

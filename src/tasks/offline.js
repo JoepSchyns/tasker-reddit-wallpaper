@@ -3,7 +3,8 @@ import {
     getCachedWithIds,
     sendNotification,
     writePrevious,
-} from '../helpers/helpers.js';
+} from '../helpers/functions.js';
+import { REDDIT_CLIENT_BASE_URL } from '../helpers/constants.js';
 
 const offline = (previous) => {
     const cached = getCachedWithIds();
@@ -22,10 +23,7 @@ const offline = (previous) => {
     }
 
     setWallpaper(cachedLast.filePath);
-    sendNotification(
-        last.title,
-        `https://reddit.premii.com/#${last.permalink}`
-    );
+    sendNotification(last.title, `${REDDIT_CLIENT_BASE_URL}${last.permalink}`);
 
     // Save date displayed last
     last.displayedLast = Date.now();
