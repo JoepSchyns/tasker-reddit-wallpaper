@@ -3,7 +3,7 @@ import {
     getCachedWithIds,
     readOrCreatePrevious,
     sendNotification,
-} from './helpers/helpers.js';
+} from './helpers/functions.js';
 import offline from './tasks/offline.js';
 import online from './tasks/online.js';
 

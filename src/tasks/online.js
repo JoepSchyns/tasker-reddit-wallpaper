@@ -3,6 +3,7 @@ import {
     MAX_WALLPAPERS,
     MIN_HEIGHT,
     MIN_WIDTH,
+    PREVIOUS_FILEPATH,
     REDDIT_CLIENT_BASE_URL,
 } from '../helpers/constants.js';
 import { fetch, global, setGlobal, setWallpaper, shell } from '../Tasker.js';
@@ -67,7 +68,12 @@ const downloadImage = (url, filePath, timeoutSec = 30) =>
         );
     });
 
-const online = async (previous = [], after) => {
+const online = async (
+    previous = [],
+    after,
+    imagePath = IMAGE_PATH,
+    previousFilepath = PREVIOUS_FILEPATH
+) => {
     // GET previously used wallpapers and new current on reddit
     const [nextAfter, current] = await getWallpaperPosts(after);
 
@@ -85,12 +91,12 @@ const online = async (previous = [], after) => {
         if (!nextAfter) {
             throw new Error('Can not paginate without a after parameter');
         }
-        return online(previous, nextAfter);
+        return online(previous, nextAfter, imagePath, previousFilepath);
     }
 
     // Get new wallpaper
     const [ext] = newWallpaper.url.match(/\.\w{3,4}($|\?)/);
-    const filePath = `${IMAGE_PATH}${newWallpaper.id}${ext}`;
+    const filePath = `${imagePath}/${newWallpaper.id}${ext}`;
     await downloadImage(newWallpaper.url, filePath);
 
     setWallpaper(filePath);
@@ -109,7 +115,7 @@ const online = async (previous = [], after) => {
         setGlobal('%WallpaperMemLength', MAX_WALLPAPERS);
     }
     previous.length = wallpaperMemLength || MAX_WALLPAPERS;
-    writePrevious(previous);
+    writePrevious(previous, previousFilepath);
     return previous;
 };
 

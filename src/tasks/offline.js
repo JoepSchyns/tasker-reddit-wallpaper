@@ -1,17 +1,25 @@
+import {
+    IMAGE_PATH,
+    PREVIOUS_FILEPATH,
+    REDDIT_CLIENT_BASE_URL,
+} from '../helpers/constants.js';
 import { flash, setWallpaper } from '../Tasker.js';
 import {
     getCachedWithIds,
     sendNotification,
     writePrevious,
 } from '../helpers/functions.js';
-import { REDDIT_CLIENT_BASE_URL } from '../helpers/constants.js';
 
-const offline = (previous) => {
-    const cached = getCachedWithIds();
+const offline = (
+    previous,
+    imagePath = IMAGE_PATH,
+    previousFilePath = PREVIOUS_FILEPATH
+) => {
+    const cached = getCachedWithIds(imagePath);
     // Get wallpaper displayed longest ago
     const nonnones = previous.filter((p) => Boolean(p));
     if (!cached.length || !previous.length) {
-        flash('Could not set offline wallpaper no cached image');
+        flash('Could not set offline wallpaper with no cached images');
         return previous;
     }
     const last = nonnones.pop();
@@ -31,9 +39,9 @@ const offline = (previous) => {
     // Update previous list
     nonnones.unshift(last);
     nonnones.length = previous.length;
-    writePrevious(nonnones);
+    writePrevious(nonnones, previousFilePath);
 
-    return previous;
+    return nonnones;
 };
 
 export default offline;

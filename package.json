@@ -4,7 +4,7 @@
   },
   "scripts": {
     "start": "npm run serve",
-    "eslint": "eslint  --ignore-path .gitignore src/",
+    "eslint": "eslint  --ignore-path .gitignore src/ tests/",
     "lint": "npm run eslint",
     "fix": "npm run eslint -- --fix",
     "serve": "gulp serve",

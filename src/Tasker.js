@@ -18,7 +18,7 @@ export const shell = (command, root, timeoutSeconds) => {
     return null;
 };
 
-export const exit = () => console.log('Tasker exit');
+export const exit = () => console.info('Tasker exit');
 
 export const writeFile = (path, text, append = false) =>
     fs[append ? 'appendFileSync' : 'writeFileSync'](path, text);
@@ -82,17 +82,22 @@ export const setGlobal = (variable, value) => {
 export const deleteFile = (filePath, shredTimes, useRoot) =>
     fs.unlinkSync(filePath.replace(/\/storage\/emulated\/0\/?/g, './'));
 
-export const listFiles = (dirPath, hiddenToo) =>
-    fs
-        .readdirSync(dirPath)
-        .map((d) => `/storage/emulated/0/${dirPath}/${d}`)
-        .join('\n');
+export const listFiles = (dirPath, hiddenToo) => {
+    if (fs.existsSync(dirPath)) {
+        return fs
+            .readdirSync(dirPath)
+            .map((d) => `/storage/emulated/0/${dirPath}/${d}`)
+            .join('\n');
+    }
+    // eslint-disable-next-line no-undefined
+    return undefined;
+};
 
 export const flash = (str) => {
     if (typeof str !== 'string') {
         throw new Error('Flash does not support non strings');
     }
-    console.log(str);
+    console.info(str);
 };
 
 export const flashLong = flash;
@@ -101,7 +106,7 @@ export const setWallpaper = (filePath) =>
     console.info('Wallpaper set', filePath);
 
 export const performTask = (taskName, priority, parameterOne, parameterTwo) =>
-    console.log('Perform task', taskName, parameterOne, parameterTwo);
+    console.info('Perform task', taskName, parameterOne, parameterTwo);
 
 // v1 tv5.12.22
 export const alarmVol = (a1, a2, a3) => {

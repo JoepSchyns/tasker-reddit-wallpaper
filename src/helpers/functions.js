@@ -5,7 +5,7 @@ export const isImage = ({ url }) => RegExp('.(jpg|png|jpeg)$', 'i').test(url);
 
 export const readOrCreatePrevious = (path = PREVIOUS_FILEPATH) => {
     try {
-        // Get previous from file and sort based on display date
+        // Get previous from file, sort based on display date and remove duplicates
         return JSON.parse(readFile(path))
             .sort((a, b) => (!a || !b ? 0 : b.displayedLast - a.displayedLast))
             .filter(
@@ -31,8 +31,8 @@ export const writePrevious = (previous, path = PREVIOUS_FILEPATH) =>
 export const sendNotification = (title, url) =>
     performTask('WallpaperNotification', 10, title, url);
 
-export const getCachedWithIds = () => {
-    const filesString = listFiles(IMAGE_PATH);
+export const getCachedWithIds = (path = IMAGE_PATH) => {
+    const filesString = listFiles(path);
     if (!filesString) {
         return [];
     }
