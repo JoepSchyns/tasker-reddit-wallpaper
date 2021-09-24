@@ -1,8 +1,15 @@
-import { mockImages, mockPreviouses } from '../helpers/functions.js';
+import {
+    mockImages,
+    mockPreviouses,
+    mockRedditResult,
+} from '../helpers/functions.js';
 import { MAX_WALLPAPERS } from '../../src/helpers/constants.js';
+import fetch from 'node-fetch';
 import fs from 'fs/promises';
 import { isImage } from '../../src/helpers/functions.js';
 import online from '../../src/tasks/online.js';
+
+jest.mock('node-fetch');
 
 describe('Device is online', () => {
     let tempDirPromise;
@@ -15,7 +22,6 @@ describe('Device is online', () => {
         fs.rmdir(tempDir, { recursive: true });
     });
 
-    // TODO MOCK reddit API and write test for it not working
     test('Reddit online', async () => {
         // Listen to console.info
         const prevConsoleInfo = console.info;
@@ -33,6 +39,15 @@ describe('Device is online', () => {
         // Mock previous.json
         const previouses = mockPreviouses(
             filesPrev.map((file) => file.split('.')[0])
+        );
+
+        // Mock api
+        fetch.mockResolvedValue(
+            new Promise((resolve) =>
+                resolve({
+                    json: () => mockRedditResult(tempDir, 1),
+                })
+            )
         );
 
         // Perform "online" task
@@ -85,5 +100,35 @@ describe('Device is online', () => {
 
         // Return console.info to its original state
         console.info = prevConsoleInfo;
+    });
+
+    test('No new wallpaper could be found', async () => {
+        const tempDir = await tempDirPromise;
+
+        // Create result with id 0
+        const result = await mockRedditResult(tempDir, 1);
+        result.data.children[0].data.id = 0;
+
+        // Mock api
+        fetch.mockResolvedValue(
+            new Promise((resolve) =>
+                resolve({
+                    json: () =>
+                        new Promise((resolveJSON) => resolveJSON(result)),
+                })
+            )
+        );
+        const getErrorMessage = async () => {
+            try {
+                // previous id is 0 and api id 0 so no new wallpaper is found. Timeout of 0 millis to paginate
+                await online([{ id: 0 }], null, null, null, 0);
+            } catch (error) {
+                return error.message;
+            }
+            return null;
+        };
+        expect(await getErrorMessage()).toBe(
+            'Could not find new wallpaper within timeout'
+        );
     });
 });

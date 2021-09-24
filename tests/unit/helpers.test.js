@@ -1,8 +1,36 @@
+import {
+    getCachedWithIds,
+    readOrCreatePrevious,
+    sendNotification,
+    writePrevious,
+} from '../../src/helpers/functions.js';
+import { mockImages, mockPreviouses } from '../helpers/functions.js';
 import fs from 'fs/promises';
-import { mockPreviouses } from '../helpers/functions.js';
-import { readOrCreatePrevious } from '../../src/helpers/functions.js';
 
-describe('Read or create previous file', () => {
+describe('Notification', () => {
+    test('Send', () => {
+        // Listen to console.info
+        const prevConsoleInfo = console.info;
+        console.info = jest.fn();
+
+        sendNotification('test', 'test_url');
+
+        // console.info('Perform task', taskName, parameterOne, parameterTwo); mocks taskers implementation of performTask
+        // Wallpaper is send using task "WallpaperNotification"
+        // Test if alleast one call to console.info contained "Perform task" in te first argument and "WallpaperNotification" in the second
+        expect(
+            console.info.mock.calls.find(
+                (call) =>
+                    /Perform task/.test(call[0]) &&
+                    /WallpaperNotification/.test(call[1])
+            )
+        ).toBeTruthy();
+
+        // Return console.info to its original state
+        console.info = prevConsoleInfo;
+    });
+});
+describe('Handle files', () => {
     let tempDirPromise;
 
     beforeEach(() => {
@@ -13,6 +41,31 @@ describe('Read or create previous file', () => {
         fs.rmdir(tempDir, { recursive: true });
     });
 
+    test("Cached with id's", async () => {
+        const tempDir = await tempDirPromise;
+        const files = await mockImages(tempDir, 3);
+        const cached = getCachedWithIds(tempDir);
+        expect(cached.length).toBe(3);
+
+        cached.forEach((ob) => {
+            expect(files.find((file) => file.includes(ob.id))).toBeTruthy();
+        });
+    });
+
+    test('No cached images', async () => {
+        const tempDir = await tempDirPromise;
+        await mockImages(tempDir, 0);
+        const cached = getCachedWithIds(tempDir);
+        expect(cached.length).toBe(0);
+    });
+
+    test('Write previous', async () => {
+        const tempDir = await tempDirPromise;
+        const previousesPath = tempDir + '/test.json';
+        await writePrevious(mockPreviouses(3), previousesPath);
+        const previouses = JSON.parse(await fs.readFile(previousesPath));
+        expect(previouses.length).toBe(3);
+    });
     test('Create empty previous', async () => {
         const tempDir = await tempDirPromise;
         const previousesPath = tempDir + '/test.json';

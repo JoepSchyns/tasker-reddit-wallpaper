@@ -36,8 +36,20 @@ export const getCachedWithIds = (path = IMAGE_PATH) => {
     if (!filesString) {
         return [];
     }
-    return filesString.split('\n').map((image) => ({
-        id: image.match(/(\w+)\.\w{3,4}/)[1],
-        filePath: image,
-    }));
+    return filesString.split('\n').reduce((acc, image) => {
+        // Get file extension
+        const match = image.match(/(\w+)\.\w{3,4}$/);
+
+        // Remove files without extension from the list
+        if (!match) {
+            return acc;
+        }
+
+        acc.push({
+            id: match[1],
+            filePath: image,
+        });
+
+        return acc;
+    }, []);
 };

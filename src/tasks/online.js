@@ -72,7 +72,8 @@ const online = async (
     previous = [],
     after,
     imagePath = IMAGE_PATH,
-    previousFilepath = PREVIOUS_FILEPATH
+    previousFilepath = PREVIOUS_FILEPATH,
+    endTime = null
 ) => {
     // GET previously used wallpapers and new current on reddit
     const [nextAfter, current] = await getWallpaperPosts(after);
@@ -90,6 +91,9 @@ const online = async (
     if (!newWallpaper) {
         if (!nextAfter) {
             throw new Error('Can not paginate without a after parameter');
+        }
+        if (Boolean(endTime) && endTime >= Date.now()) {
+            throw new Error('Could not find new wallpaper within timeout');
         }
         return online(previous, nextAfter, imagePath, previousFilepath);
     }
@@ -118,5 +122,21 @@ const online = async (
     writePrevious(previous, previousFilepath);
     return previous;
 };
-
-export default online;
+const initOnline = async (
+    previous = [],
+    after,
+    imagePath = IMAGE_PATH,
+    previousFilepath = PREVIOUS_FILEPATH,
+    timeoutDuration = 30 * 1000
+) => {
+    const endtime = Date.now() + timeoutDuration;
+    const result = await online(
+        previous,
+        after,
+        imagePath,
+        previousFilepath,
+        endtime
+    );
+    return result;
+};
+export default initOnline;
