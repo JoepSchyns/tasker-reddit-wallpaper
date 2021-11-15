@@ -1,0 +1,14 @@
+version: "3"
+services:
+  android-container:
+    privileged: true
+    image: budtmo/docker-android-x86-8.1
+    ports:
+      - "6080:6080"
+      - "5555:5555"
+      - "4723:4723"
+    environment:
+      - DEVICE="Samsung Galaxy S6"
+      - APPIUM=true
+    volumes:
+      - ./data:/root/tmp
