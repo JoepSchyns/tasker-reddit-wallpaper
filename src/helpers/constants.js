@@ -7,6 +7,7 @@ module.exports = Object.freeze(
         this.PREVIOUS_FILEPATH = this.TASKER_PATH + '/wallpaper/previous.json';
         this.IMAGE_PATH = this.TASKER_PATH + '/wallpaper/images/';
         this.REDDIT_CLIENT_BASE_URL = 'https://reddit.premii.com/#';
+        this.REDDIT_WALLPAPER_SOURCE_URL = 'https://reddit.com/r/art.json';
         this.MIN_WIDTH = 1080;
         this.MIN_HEIGHT = 1920;
     })()

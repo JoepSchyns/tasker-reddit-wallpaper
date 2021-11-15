@@ -5,6 +5,7 @@ import {
     MIN_WIDTH,
     PREVIOUS_FILEPATH,
     REDDIT_CLIENT_BASE_URL,
+    REDDIT_WALLPAPER_SOURCE_URL,
 } from '../helpers/constants.js';
 import { fetch, global, setGlobal, setWallpaper, shell } from '../Tasker.js';
 import {
@@ -18,11 +19,12 @@ const isLargeEnough = ({ width, height }) =>
 
 const getWallpaperPosts = async (after) => {
     const request = await fetch(
-        `https://reddit.com/r/art.json?limit=100${
+        `${REDDIT_WALLPAPER_SOURCE_URL}?limit=100${
             after ? `&after=${after}` : ''
         }`
     );
     const result = await request.json();
+
     // Clean data
     const posts = result.data.children.map((post) =>
         (({ id, title, permalink, url, preview }) => ({
@@ -108,6 +110,10 @@ const online = async (
         newWallpaper.title,
         `${REDDIT_CLIENT_BASE_URL}${newWallpaper.permalink}`
     );
+    setGlobal(
+        'WallpaperPostUrl',
+        `${REDDIT_CLIENT_BASE_URL}${newWallpaper.permalink}`
+    );
 
     // Save date displayed last
     newWallpaper.displayedLast = Date.now();
@@ -122,6 +128,7 @@ const online = async (
     writePrevious(previous, previousFilepath);
     return previous;
 };
+
 const initOnline = async (
     previous = [],
     after,
@@ -129,6 +136,7 @@ const initOnline = async (
     previousFilepath = PREVIOUS_FILEPATH,
     timeoutDuration = 30 * 1000
 ) => {
+    console.log('Start online');
     const endtime = Date.now() + timeoutDuration;
     const result = await online(
         previous,

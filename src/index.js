@@ -12,20 +12,22 @@ const cleanCached = (previous) =>
         .filter(({ id }) => !previous.find((post) => post && post.id === id))
         .forEach(({ filePath }) => deleteFile(filePath));
 
+// Main function
 (async () => {
     try {
         sendNotification('Updating wallpaper...');
+
+        // Get history of wallpapers
         const previous = readOrCreatePrevious();
+
+        // Check if phone is connected to Wifi and run either off or online
         const [_, group] = global('%WIFII').match(/>>> (.+) <<</);
-        if (group === 'CONNECTION') {
-            console.log('online');
-            const newPrevious = await online(previous);
-            cleanCached(newPrevious);
-        } else {
-            console.log('offline');
-            const newPrevious = await offline(previous);
-            cleanCached(newPrevious);
-        }
+        const newPrevious = await (group === 'CONNECTION' ? online : offline)(
+            previous
+        );
+
+        // Remove wallpapers from cache
+        cleanCached(newPrevious);
     } catch (e) {
         console.error(e);
         flash(e.toString());
