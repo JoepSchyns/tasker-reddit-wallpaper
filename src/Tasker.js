@@ -3,12 +3,14 @@ import fs from 'fs';
 export { default as fetch } from 'node-fetch';
 
 export const shell = (command, root, timeoutSeconds) => {
-    const removed_android_paths_command = command.replace(
-        /\/storage\/emulated\/0\/?/g,
-        './'
-    );
+    if(process.env.NODE_ENV !== "production"){
+        command = command.replace(
+            /\/storage\/emulated\/0\/?/g,
+            './'
+        );
+    }
     try {
-        return execSync(removed_android_paths_command, {
+        return execSync(command, {
             timeout: timeoutSeconds * 1000,
             stdio: ['ignore', 'pipe', 'ignore'],
         }).toString();

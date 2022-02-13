@@ -38,7 +38,7 @@ describe('Handle files', () => {
     });
     afterEach(async () => {
         const tempDir = await tempDirPromise;
-        fs.rmdir(tempDir, { recursive: true });
+        fs.rm(tempDir, { recursive: true });
     });
 
     test("Cached with id's", async () => {

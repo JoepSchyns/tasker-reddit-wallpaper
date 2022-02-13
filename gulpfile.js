@@ -3,7 +3,7 @@ const nodemon = require('gulp-nodemon');
 const fs = require('fs');
 const webpack = require('webpack-stream');
 
-gulp.task('build', (done) =>
+gulp.task('build', () =>
   gulp
   .src('src/index.js')
   .pipe(
@@ -11,7 +11,7 @@ gulp.task('build', (done) =>
       mode: 'production',
       output: { filename: 'index.min.js' },
       externals: [
-        function ({ context, request }, callback) {
+        function ({ request }, callback) {
           if (/tasker/i.test(request)) {
             // Externalize to a commonjs module using the request path
             return callback(null, 'this');
@@ -47,7 +47,7 @@ gulp.task('pack', () => gulp
       console.error('WEBPACK ERROR', err);
       this.emit('end'); // Don't stop the rest of the task
     })
-    .pipe(gulp.dest('./.tmp/')),
+    .pipe(gulp.dest('.tmp'), { recursive: true }),
 );
 
 gulp.task(
@@ -57,10 +57,11 @@ gulp.task(
       script: './.tmp/index.js',
       ext: 'js html',
       env: { NODE_ENV: 'development' },
+      args: process.argv,
       ignore: ['dist'],
       tasks: ['pack'],
       done() {
-        fs.rmdirSync('./.tmp', { recursive: true });
+        fs.rm('.tmp', { recursive: true });
         done();
       },
     });

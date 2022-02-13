@@ -10,7 +10,7 @@ describe('Device is offline', () => {
     });
     afterEach(async () => {
         const tempDir = await tempDirPromise;
-        fs.rmdir(tempDir, { recursive: true });
+        fs.rm(tempDir, { recursive: true });
     });
 
     test('Wallpapers available', async () => {

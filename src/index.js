@@ -22,7 +22,8 @@ const cleanCached = (previous) =>
 
         // Check if phone is connected to Wifi and run either off or online
         const [_, group] = global('%WIFII').match(/>>> (.+) <<</);
-        const newPrevious = await (group === 'CONNECTION' ? online : offline)(
+        
+        const newPrevious = await (process.argv.includes("--online")? online: process.argv.includes("--offline")? offline:group === 'CONNECTION' ? online : offline)(
             previous
         );
 

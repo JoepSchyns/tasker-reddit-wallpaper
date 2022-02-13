@@ -24,6 +24,7 @@
     "nodemon": "^2.0.7",
     "prettier": "^2.3.2",
     "through2": "^2.0.5",
+    "webpack": "^5.68.0",
     "webpack-stream": "^7.0.0"
   }
 }

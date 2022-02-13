@@ -19,7 +19,7 @@ describe('Device is online', () => {
     });
     afterEach(async () => {
         const tempDir = await tempDirPromise;
-        fs.rmdir(tempDir, { recursive: true });
+        fs.rm(tempDir, { recursive: true });
     });
 
     test('Reddit online', async () => {
