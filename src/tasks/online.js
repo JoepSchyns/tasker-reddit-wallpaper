@@ -7,7 +7,13 @@ import {
     REDDIT_CLIENT_BASE_URL,
     REDDIT_WALLPAPER_SOURCE_URL,
 } from '../helpers/constants.js';
-import { fetch, global, setGlobal, setWallpaper, shell } from '../Tasker.js';
+import {
+    fetch,
+    global,
+    setGlobal,
+    setWallpaper,
+    shell,
+} from '../Tasker.js';
 import {
     isImage,
     sendNotification,
@@ -53,22 +59,51 @@ const getWallpaperPosts = async (after) => {
     return [result.data.after, posts.filter(isImage).filter(isLargeEnough)];
 };
 
-const downloadImage = (url, filePath, timeoutSec = 30) =>
-    new Promise((resolve, reject) => {
-        const r = shell(
-            `cd /storage/emulated/0 && curl -L -f -o "${filePath}" "${url}" && echo d`,
-            false,
-            timeoutSec
-        );
-        if (r) {
-            return resolve();
-        }
-        return reject(
-            Error(
-                `Could not download ${url} to /storage/emulated/0/${filePath}`
-            )
-        );
+const blobToBase64 = (blob) =>
+    new Promise((resolve, _) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
     });
+
+const getWallpaperBase64 = async (url, filePath) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const base64DataUrl = await blobToBase64(blob);
+    const base64 = base64DataUrl.match(
+        /^data:image\/[a-z]+;base64,(?<base>.+)$/
+    ).groups.base;
+    const command = `echo '${base64}' | base64 -d > /storage/emulated/0/${filePath} && echo done`;
+    const r = shell(command, false, 45);
+    if (!r) {
+        throw new Error(
+            `shell command failed Tasker JS does not include error, ${command}`
+        );
+    }
+};
+
+const getWallpaperCurl = (url, filePath) => {
+    const command = `cd /storage/emulated/0 && curl -L -f -o "${filePath}" "${url}" && echo done`;
+    const r = shell(command, false, 45);
+    if (!r) {
+        throw new Error(
+            `Curl wallpaper download errored with commmand: ${command}`
+        );
+    }
+};
+
+const downloadImage = async (url, filePath) => {
+    // Test shell commands needed for downloading methods
+    if (shell('curl --help', false, 10)) {
+        getWallpaperCurl(url, filePath);
+    } else if (shell('base64 --help', false, 10)) {
+        await getWallpaperBase64(url, filePath);
+    } else {
+        throw new Error(
+            'Neither curl or base64 commands precent in shell, no methods available to download image'
+        );
+    }
+};
 
 const online = async (
     previous = [],

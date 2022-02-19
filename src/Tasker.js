@@ -3,12 +3,8 @@ import fs from 'fs';
 export { default as fetch } from 'node-fetch';
 
 export const shell = (command, root, timeoutSeconds) => {
-    if(process.env.NODE_ENV !== "production"){
-        command = command.replace(
-            /\/storage\/emulated\/0\/?/g,
-            './'
-        );
-    }
+    command = command.replace(/\/storage\/emulated\/0\/?/g, './');
+
     try {
         return execSync(command, {
             timeout: timeoutSeconds * 1000,
@@ -107,8 +103,13 @@ export const flashLong = flash;
 export const setWallpaper = (filePath) =>
     console.info('Wallpaper set', filePath);
 
-export const performTask = (taskName, priority, parameterOne, parameterTwo) =>
+export const performTask = (taskName, priority, parameterOne, parameterTwo) => {
     console.info('Perform task', taskName, parameterOne, parameterTwo);
+    return 'true';
+};
+
+export const setClip = (text, appendFlag) =>
+    console.info('Set clipboard', text, appendFlag);
 
 // v1 tv5.12.22
 export const alarmVol = (a1, a2, a3) => {
@@ -344,9 +345,6 @@ export const sendIntent = (a1, a2, a3, a4, a5, a6, a7, a8) => {
 };
 export const sendSMS = (a1, a2, a3) => {
     throw new Error('Function sendSMS is not yet implemented');
-};
-export const setClip = (a1, a2) => {
-    throw new Error('Function setClip is not yet implemented');
 };
 export const settings = (a1) => {
     throw new Error('Function settings is not yet implemented');
