@@ -7,13 +7,7 @@ import {
     REDDIT_CLIENT_BASE_URL,
     REDDIT_WALLPAPER_SOURCE_URL,
 } from '../helpers/constants.js';
-import {
-    fetch,
-    global,
-    setGlobal,
-    setWallpaper,
-    shell,
-} from '../Tasker.js';
+import { fetch, setGlobal, setWallpaper, shell } from '../Tasker.js';
 import {
     isImage,
     sendNotification,
@@ -155,11 +149,7 @@ const online = async (
 
     // Update previous list
     previous.unshift(newWallpaper);
-    const wallpaperMemLength = global('%WallpaperMemLength');
-    if (!wallpaperMemLength) {
-        setGlobal('%WallpaperMemLength', MAX_WALLPAPERS);
-    }
-    previous.length = wallpaperMemLength || MAX_WALLPAPERS;
+    previous.length = MAX_WALLPAPERS;
     writePrevious(previous, previousFilepath);
     return previous;
 };
