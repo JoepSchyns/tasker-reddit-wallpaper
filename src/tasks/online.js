@@ -61,19 +61,30 @@ const blobToBase64 = (blob) =>
     });
 
 const getWallpaperBase64 = async (url, filePath) => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const base64DataUrl = await blobToBase64(blob);
-    const base64 = base64DataUrl.match(
-        /^data:image\/[a-z]+;base64,(?<base>.+)$/
-    ).groups.base;
-    const command = `echo '${base64}' | base64 -d > /storage/emulated/0/${filePath} && echo done`;
-    const r = shell(command, false, 45);
-    if (!r) {
-        throw new Error(
-            `shell command failed Tasker JS does not include error, ${command}`
-        );
-    }
+    return new Promise((resolve, reject)=> {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement("canvas")
+            ctx = canvas.getContext("2d");
+            const rFactor = MIN_HEIGHT / this.height;
+            canvas.width = this.width * rFactor;
+            canvas.height= MIN_HEIGHT;
+        
+            ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
+            const base64 = canvas.toDataURL("image/jpeg", 0.8).match(
+                    /^data:image\/[a-z]+;base64,(?<base>.+)$/
+                ).groups.base;
+            const command = `echo '${base64}' | base64 -d > /storage/emulated/0/${filePath} && echo done`;
+            const r = shell(command, false, 45);
+            if (!r) {
+                return reject(new Error(
+                    `shell command failed Tasker JS does not include error, ${command}`
+                ))
+            }
+            return resolve();
+        }
+        img.src = url
+    })
 };
 
 const getWallpaperCurl = (url, filePath) => {
