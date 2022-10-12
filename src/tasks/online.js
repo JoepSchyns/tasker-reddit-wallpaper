@@ -53,39 +53,37 @@ const getWallpaperPosts = async (after) => {
     return [result.data.after, posts.filter(isImage).filter(isLargeEnough)];
 };
 
-const blobToBase64 = (blob) =>
-    new Promise((resolve, _) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
-    });
-
-const getWallpaperBase64 = async (url, filePath) => {
-    return new Promise((resolve, reject)=> {
+const getWallpaperBase64 = (url, filePath) =>
+    new Promise((resolve, reject) => {
+        // Image present in Tasker js
+        // eslint-disable-next-line no-undef
         const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement("canvas")
-            ctx = canvas.getContext("2d");
+        img.onload = function () {
+            // document present in Tasker js
+            // eslint-disable-next-line no-undef
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
             const rFactor = MIN_HEIGHT / this.height;
             canvas.width = this.width * rFactor;
-            canvas.height= MIN_HEIGHT;
-        
+            canvas.height = MIN_HEIGHT;
+
             ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
-            const base64 = canvas.toDataURL("image/jpeg", 0.8).match(
-                    /^data:image\/[a-z]+;base64,(?<base>.+)$/
-                ).groups.base;
+            const base64 = canvas
+                .toDataURL('image/jpeg', 0.8)
+                .match(/^data:image\/[a-z]+;base64,(?<base>.+)$/).groups.base;
             const command = `echo '${base64}' | base64 -d > /storage/emulated/0/${filePath} && echo done`;
             const r = shell(command, false, 45);
             if (!r) {
-                return reject(new Error(
-                    `shell command failed Tasker JS does not include error, ${command}`
-                ))
+                return reject(
+                    new Error(
+                        `shell command failed Tasker JS does not include error, ${command}`
+                    )
+                );
             }
             return resolve();
-        }
-        img.src = url
-    })
-};
+        };
+        img.src = url;
+    });
 
 const getWallpaperCurl = (url, filePath) => {
     const command = `cd /storage/emulated/0 && curl -L -f -o "${filePath}" "${url}" && echo done`;
