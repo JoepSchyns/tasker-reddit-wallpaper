@@ -6,6 +6,7 @@ import {
 } from '../../src/helpers/functions.js';
 import { mockImages, mockPreviouses } from '../helpers/functions.js';
 import fs from 'fs/promises';
+import {jest} from '@jest/globals';
 
 describe('Notification', () => {
     test('Send', () => {
