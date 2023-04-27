@@ -6,12 +6,10 @@ const __dirname = path.dirname(__filename);
 
 export default {
   entry: './src/index.js',
+  mode: 'production',
   externals: [
     function ({ context, request }, callback) {
-      console.log(request);
-      console.log("TEST");
       if (/^.*Tasker\.js$/.test(request)) {
-	console.log("get", context)
         // Externalize to a commonjs module using the request path
         return callback(null, "this");
       }

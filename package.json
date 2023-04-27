@@ -9,7 +9,7 @@
     "lint": "npm run eslint",
     "fix": "npm run eslint -- --fix",
     "serve": "nodemon --watch src/ --exec \"npm run start\"",
-    "build": "gulp build",
+    "build": "webpack",
     "test": "npm --experimental-vm-modules run jest",
     "jest": "jest"
   },
