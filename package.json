@@ -1,10 +1,9 @@
 {
   "dependencies": {
-    "node-fetch": "^3.3.1"
+    "ts-node": "^10.9.1"
   },
-  "type": "module",
   "scripts": {
-    "start": "node ./src/index.js",
+    "start": "ts-node ./src/index.ts",
     "eslint": "eslint  --ignore-path .gitignore src/ tests/",
     "lint": "npm run eslint",
     "fix": "npm run eslint -- --fix",
@@ -12,7 +11,7 @@
     "build": "webpack",
     "test": "npm --experimental-vm-modules run jest",
     "jest": "jest",
-    "tcs": "tcs"
+    "tcs": "tcs --init"
   },
   "devDependencies": {
     "eslint": "^8.39.0",
@@ -24,6 +23,7 @@
     "nodemon": "^2.0.22",
     "prettier": "^2.8.8",
     "tcs": "^10.0.2",
+    "typescript": "^5.0.4",
     "webpack": "^5.80.0",
     "webpack-cli": "^5.0.2"
   }

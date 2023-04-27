@@ -7,7 +7,7 @@ import {
     REDDIT_CLIENT_BASE_URL,
     REDDIT_WALLPAPER_SOURCE_URL,
 } from '../helpers/constants.js';
-import { fetch, setGlobal, setWallpaper, shell } from '../Tasker.js';
+import {setGlobal, setWallpaper, shell } from '../Tasker.js';
 import {
     isImage,
     sendNotification,

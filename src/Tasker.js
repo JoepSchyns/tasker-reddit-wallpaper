@@ -1,7 +1,5 @@
 import { execSync } from 'child_process';
-import fs from 'fs';
-export { default as fetch } from 'node-fetch';
-
+import { readFileSync, writeFileSync, unlinkSync, existsSync, readdirSync } from 'fs';
 export const shell = (command, root, timeoutSeconds) => {
     command = command.replace(/\/storage\/emulated\/0\/?/g, './');
 
@@ -19,9 +17,9 @@ export const shell = (command, root, timeoutSeconds) => {
 export const exit = () => console.info('Tasker exit');
 
 export const writeFile = (path, text, append = false) =>
-    fs[append ? 'appendFileSync' : 'writeFileSync'](path, text);
+    (append ? appendFileSync : writeFileSync)(path, text);
 
-export const readFile = (path) => fs.readFileSync(path);
+export const readFile = (path) => readFileSync(path);
 
 export const GLOBALS_PATH = 'Tasker/globals_.json';
 
@@ -55,7 +53,7 @@ export const global = (variable) => {
         Chl: 5`;
         default:
             try {
-                return JSON.parse(fs.readFileSync(GLOBALS_PATH))[variable];
+                return JSON.parse(readFileSync(GLOBALS_PATH))[variable];
             } catch (e) {
                 console.info(
                     `Global variable ${variable} is either not in the Tasker ecosystem, not implemented or a unset custom global`,
@@ -69,21 +67,20 @@ export const global = (variable) => {
 export const setGlobal = (variable, value) => {
     let globals;
     try {
-        globals = JSON.parse(fs.readFileSync(GLOBALS_PATH));
+        globals = JSON.parse(readFileSync(GLOBALS_PATH));
     } catch {
         globals = {};
     }
     globals[variable] = value;
-    fs.writeFileSync(GLOBALS_PATH, JSON.stringify(globals));
+    writeFileSync(GLOBALS_PATH, JSON.stringify(globals));
 };
 
 export const deleteFile = (filePath, shredTimes, useRoot) =>
-    fs.unlinkSync(filePath.replace(/\/storage\/emulated\/0\/?/g, './'));
+    unlinkSync(filePath.replace(/\/storage\/emulated\/0\/?/g, './'));
 
 export const listFiles = (dirPath, hiddenToo) => {
-    if (fs.existsSync(dirPath)) {
-        return fs
-            .readdirSync(dirPath)
+    if (existsSync(dirPath)) {
+        return readdirSync(dirPath)
             .map((d) => `/storage/emulated/0/${dirPath}/${d}`)
             .join('\n');
     }

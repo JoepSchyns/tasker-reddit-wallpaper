@@ -4,12 +4,11 @@ import {
     mockRedditResult,
 } from '../helpers/functions.js';
 import { MAX_WALLPAPERS } from '../../src/helpers/constants.js';
-import fetch from 'node-fetch';
 import fs from 'fs/promises';
 import { isImage } from '../../src/helpers/functions.js';
 import online from '../../src/tasks/online.js';
 
-jest.mock('node-fetch');
+jest.mock('fetch');
 
 describe('Device is online', () => {
     let tempDirPromise;
