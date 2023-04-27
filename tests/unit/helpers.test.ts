@@ -3,43 +3,39 @@ import {
     readOrCreatePrevious,
     sendNotification,
     writePrevious,
-} from '../../src/helpers/functions.js';
-import { mockImages, mockPreviouses } from '../helpers/functions.js';
-import fs from 'fs/promises';
-import {jest} from '@jest/globals';
+} from '../../src/helpers/functions';
+import { mockImages, mockPreviouses } from '../helpers/functions';
+import { mkdtemp, rm, writeFile, readFile } from 'fs/promises';
+import {describe, expect, test, beforeEach, afterEach, jest} from '@jest/globals';
+
+const info = jest.spyOn(console, "info").mockImplementation(() => {});
 
 describe('Notification', () => {
     test('Send', () => {
         // Listen to console.info
-        const prevConsoleInfo = console.info;
-        console.info = jest.fn();
-
         sendNotification('test', 'test_url');
 
         // console.info('Perform task', taskName, parameterOne, parameterTwo); mocks taskers implementation of performTask
         // Wallpaper is send using task "WallpaperNotification"
         // Test if alleast one call to console.info contained "Perform task" in te first argument and "WallpaperNotification" in the second
         expect(
-            console.info.mock.calls.find(
+            info.mock.calls.find(
                 (call) =>
                     /Perform task/.test(call[0]) &&
                     /WallpaperNotification/.test(call[1])
             )
         ).toBeTruthy();
-
-        // Return console.info to its original state
-        console.info = prevConsoleInfo;
     });
 });
 describe('Handle files', () => {
     let tempDirPromise;
 
     beforeEach(() => {
-        tempDirPromise = fs.mkdtemp('temp-');
+        tempDirPromise = mkdtemp('temp-');
     });
     afterEach(async () => {
         const tempDir = await tempDirPromise;
-        fs.rm(tempDir, { recursive: true });
+        rm(tempDir, { recursive: true });
     });
 
     test("Cached with id's", async () => {
@@ -64,7 +60,7 @@ describe('Handle files', () => {
         const tempDir = await tempDirPromise;
         const previousesPath = tempDir + '/test.json';
         await writePrevious(mockPreviouses(3), previousesPath);
-        const previouses = JSON.parse(await fs.readFile(previousesPath));
+        const previouses = JSON.parse((await readFile(previousesPath)).toString());
         expect(previouses.length).toBe(3);
     });
     test('Create empty previous', async () => {
@@ -80,7 +76,7 @@ describe('Handle files', () => {
         const tempDir = await tempDirPromise;
         const previousesPath = tempDir + '/test.json';
 
-        await fs.writeFile(previousesPath, JSON.stringify(mockPreviouses(1)));
+        await writeFile(previousesPath, JSON.stringify(mockPreviouses(1)));
         const previouses = readOrCreatePrevious(previousesPath);
 
         expect(previouses.length).toBe(1);
@@ -91,7 +87,7 @@ describe('Handle files', () => {
         const previousesPath = tempDir + '/test.json';
 
         // Write a randomly sorted mock previouses
-        await fs.writeFile(
+        await writeFile(
             previousesPath,
             JSON.stringify(
                 mockPreviouses(20)
@@ -117,7 +113,7 @@ describe('Handle files', () => {
         const previousesPath = tempDir + '/test.json';
 
         // Write previouses with the same id
-        await fs.writeFile(
+        await writeFile(
             previousesPath,
             JSON.stringify(
                 mockPreviouses(5).map((p, index) => ({ ...p, id: 0 }))

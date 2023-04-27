@@ -6,13 +6,15 @@ import {
     PREVIOUS_FILEPATH,
     REDDIT_CLIENT_BASE_URL,
     REDDIT_WALLPAPER_SOURCE_URL,
-} from '../helpers/constants.js';
-import {setGlobal, setWallpaper, shell } from '../Tasker.js';
+} from '../helpers/constants';
+import {setGlobal, setWallpaper, shell } from '../Tasker';
 import {
     isImage,
     sendNotification,
     writePrevious,
-} from '../helpers/functions.js';
+} from '../helpers/functions';
+import { POST as STORAGE_POST } from '../../types/storage';
+import { API_RESPONSE } from '../../types/reddit-api';
 
 const isLargeEnough = ({ width, height }) =>
     width >= MIN_WIDTH && height >= MIN_HEIGHT;
@@ -53,7 +55,7 @@ const getWallpaperPosts = async (after) => {
     return [result.data.after, posts.filter(isImage).filter(isLargeEnough)];
 };
 
-const getWallpaperBase64 = (url, filePath) =>
+const getWallpaperBase64 = (url, filePath) : Promise<void> =>
     new Promise((resolve, reject) => {
         // Image present in Tasker js
         // eslint-disable-next-line no-undef
@@ -63,11 +65,11 @@ const getWallpaperBase64 = (url, filePath) =>
             // eslint-disable-next-line no-undef
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            const rFactor = MIN_HEIGHT / this.height;
-            canvas.width = this.width * rFactor;
+            const rFactor = MIN_HEIGHT / img.height;
+            canvas.width = img.width * rFactor;
             canvas.height = MIN_HEIGHT;
 
-            ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             const base64 = canvas
                 .toDataURL('image/jpeg', 0.8)
                 .match(/^data:image\/[a-z]+;base64,(?<base>.+)$/).groups.base;
@@ -109,8 +111,8 @@ const downloadImage = async (url, filePath) => {
 };
 
 const online = async (
-    previous = [],
-    after,
+    previous: Array<STORAGE_POST> = [],
+    after: API_RESPONSE['data']['after'],
     imagePath = IMAGE_PATH,
     previousFilepath = PREVIOUS_FILEPATH,
     endTime = null
@@ -165,7 +167,7 @@ const online = async (
 
 const initOnline = async (
     previous = [],
-    after,
+    after?,
     imagePath = IMAGE_PATH,
     previousFilepath = PREVIOUS_FILEPATH,
     timeoutDuration = 30 * 1000

@@ -1,11 +1,11 @@
-import { deleteFile, exit, flash, global } from './Tasker.js';
+import { deleteFile, exit, flash, global } from './Tasker';
 import {
     getCachedWithIds,
     readOrCreatePrevious,
     sendNotification,
-} from './helpers/functions.js';
-import offline from './tasks/offline.js';
-import online from './tasks/online.js';
+} from './helpers/functions';
+import offline from './tasks/offline';
+import online from './tasks/online';
 
 const cleanCached = (previous) =>
     getCachedWithIds()

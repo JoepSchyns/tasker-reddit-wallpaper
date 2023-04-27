@@ -1,23 +1,21 @@
-import { mockImages, mockPreviouses } from '../helpers/functions.js';
-import fs from 'fs/promises';
-import offline from '../../src/tasks/offline.js';
+import { mockImages, mockPreviouses } from '../helpers/functions';
+import { mkdtemp, readdir, rm } from 'fs/promises';
+import offline from '../../src/tasks/offline';
+import {describe, expect, test, beforeEach, afterEach, jest} from '@jest/globals';
+const info = jest.spyOn(console, "info").mockImplementation(() => {});
 
 describe('Device is offline', () => {
     let tempDirPromise;
 
     beforeEach(() => {
-        tempDirPromise = fs.mkdtemp('temp-');
+        tempDirPromise = mkdtemp('temp-');
     });
     afterEach(async () => {
         const tempDir = await tempDirPromise;
-        fs.rm(tempDir, { recursive: true });
+        rm(tempDir, { recursive: true });
     });
 
     test('Wallpapers available', async () => {
-        // Listen to console.info
-        const prevConsoleInfo = console.info;
-        console.info = jest.fn();
-
         const tempDir = await tempDirPromise;
         const imagePath = tempDir + '/images';
         const previousesfilePath = tempDir + '/test.json';
@@ -25,7 +23,7 @@ describe('Device is offline', () => {
         await mockImages(imagePath, 10);
 
         // Get current wallpapers
-        const filesPrev = await fs.readdir(imagePath);
+        const filesPrev = await readdir(imagePath);
 
         // Mock previous.json
         const previouses = mockPreviouses(
@@ -41,13 +39,13 @@ describe('Device is offline', () => {
 
         // console.info('Wallpaper set', filePath); mocks taskers implementation of setWallpaper
         // Test if alleast one call to console.info contained "wallpaper set" in te first argument
-        const wallpapersetArgs = console.info.mock.calls.find((call) =>
+        const wallpapersetArgs = info.mock.calls.find((call) =>
             /wallpaper set/i.test(call[0])
         );
         expect(wallpapersetArgs).toBeTruthy();
 
         // Test if no wallpaper is added or deleted
-        const filesNew = await fs.readdir(imagePath);
+        const filesNew = await readdir(imagePath);
         expect(filesNew.length - filesPrev.length).toBe(0);
 
         // Test if newly set wallpaper was at the back of the queue
@@ -67,16 +65,9 @@ describe('Device is offline', () => {
 
         // Test if no new entry is added to previous
         expect(newPreviouses.length - previouses.length === 0).toBeTruthy();
-
-        // Return console.info to its original state
-        console.info = prevConsoleInfo;
     });
 
     test('No wallpapers available', async () => {
-        // Listen to console.info
-        const prevConsoleInfo = console.info;
-        console.info = jest.fn();
-
         const tempDir = await tempDirPromise;
         const imagePath = tempDir + '/images';
         const previousesfilePath = tempDir + '/test.json';
@@ -86,12 +77,9 @@ describe('Device is offline', () => {
 
         // console.info(str); mocks taskers implementation of flash
         // Test if alleast one call to console.info contained "Could not set offline wallpaper" in te first argument
-        const wallpapersetArgs = console.info.mock.calls.find((call) =>
+        const wallpapersetArgs = info.mock.calls.find((call) =>
             /Could not set offline wallpaper/i.test(call[0])
         );
         expect(wallpapersetArgs).toBeTruthy();
-
-        // Return console.info to its original state
-        console.info = prevConsoleInfo;
     });
 });

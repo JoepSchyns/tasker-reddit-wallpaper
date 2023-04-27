@@ -1,12 +1,12 @@
-import { IMAGE_PATH, PREVIOUS_FILEPATH } from './constants.js';
-import { listFiles, performTask, readFile, writeFile } from '../Tasker.js';
+import { IMAGE_PATH, PREVIOUS_FILEPATH } from './constants';
+import { listFiles, performTask, readFile, writeFile } from '../Tasker';
 
 export const isImage = ({ url }) => RegExp('.(jpg|png|jpeg)$', 'i').test(url);
 
 export const readOrCreatePrevious = (path = PREVIOUS_FILEPATH) => {
     try {
         // Get previous from file, sort based on display date and remove duplicates
-        return JSON.parse(readFile(path))
+        return JSON.parse(readFile(path).toString())
             .sort((a, b) => (!a || !b ? 0 : b.displayedLast - a.displayedLast))
             .filter(
                 (p, i, self) =>
@@ -28,7 +28,7 @@ export const readOrCreatePrevious = (path = PREVIOUS_FILEPATH) => {
 export const writePrevious = (previous, path = PREVIOUS_FILEPATH) =>
     writeFile(path, JSON.stringify(previous));
 
-export const sendNotification = (title, url) =>
+export const sendNotification = (title, url?) =>
     performTask('WallpaperNotification', 10, title, url);
 
 export const getCachedWithIds = (path = IMAGE_PATH) => {

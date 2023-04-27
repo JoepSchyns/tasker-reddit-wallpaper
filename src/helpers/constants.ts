@@ -1,4 +1,4 @@
-import { global, setGlobal } from '../Tasker.js';
+import { global, setGlobal } from '../Tasker';
 
 const createGlobalIfNotExist = (name, defaultValue) => {
     console.log(global, setGlobal);

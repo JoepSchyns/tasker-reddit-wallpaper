@@ -2,29 +2,29 @@ import {
     mockImages,
     mockPreviouses,
     mockRedditResult,
-} from '../helpers/functions.js';
-import { MAX_WALLPAPERS } from '../../src/helpers/constants.js';
-import fs from 'fs/promises';
-import { isImage } from '../../src/helpers/functions.js';
-import online from '../../src/tasks/online.js';
-
-jest.mock('fetch');
+} from '../helpers/functions';
+import { MAX_WALLPAPERS } from '../../src/helpers/constants';
+import { mkdtemp, readdir, rm } from 'fs/promises';
+import { isImage } from '../../src/helpers/functions';
+import online from '../../src/tasks/online';
+import {describe, expect, test, beforeEach, afterEach, jest} from '@jest/globals';
+global.fetch = jest.fn() as (input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>;
+const mockedFetch = jest.mocked(fetch)
+const info = jest.spyOn(console, "info").mockImplementation(() => {});
 
 describe('Device is online', () => {
     let tempDirPromise;
 
     beforeEach(() => {
-        tempDirPromise = fs.mkdtemp('temp-');
+        tempDirPromise = mkdtemp('temp-');
     });
     afterEach(async () => {
         const tempDir = await tempDirPromise;
-        fs.rm(tempDir, { recursive: true });
+        rm(tempDir, { recursive: true });
     });
 
     test('Reddit online', async () => {
         // Listen to console.info
-        const prevConsoleInfo = console.info;
-        console.info = jest.fn();
 
         const tempDir = await tempDirPromise;
         const imagePath = tempDir + '/images';
@@ -33,7 +33,7 @@ describe('Device is online', () => {
         await mockImages(imagePath, 10);
 
         // Get current wallpapers
-        const filesPrev = await fs.readdir(imagePath);
+        const filesPrev = await readdir(imagePath);
 
         // Mock previous.json
         const previouses = mockPreviouses(
@@ -41,12 +41,9 @@ describe('Device is online', () => {
         );
 
         // Mock api
-        fetch.mockResolvedValue(
-            new Promise((resolve) =>
-                resolve({
-                    json: () => mockRedditResult(tempDir, 1),
-                })
-            )
+        mockedFetch.mockImplementation(() => Promise.resolve({
+                json: () => mockRedditResult(tempDir, 1),
+            } as Response)
         );
 
         // Perform "online" task
@@ -58,7 +55,7 @@ describe('Device is online', () => {
         );
 
         // Test if one wallpaper is added
-        const filesNew = await fs.readdir(imagePath);
+        const filesNew = await readdir(imagePath);
         expect(filesNew.length - filesPrev.length).toBe(1);
 
         // Test if new file is a image
@@ -92,35 +89,30 @@ describe('Device is online', () => {
         // console.info('Wallpaper set', filePath); mocks taskers implementation of setWallpaper
         // Test if alleast one call to console.info contained "wallpaper set" in te first argument
         expect(
-            console.info.mock.calls.find((call) =>
+            info.mock.calls.find((call) =>
                 /wallpaper set/i.test(call[0])
             )
         ).toBeTruthy();
-
-        // Return console.info to its original state
-        console.info = prevConsoleInfo;
     });
 
     test('No new wallpaper could be found', async () => {
         const tempDir = await tempDirPromise;
 
-        // Create result with id 0
-        const result = await mockRedditResult(tempDir, 1);
-        result.data.children[0].data.id = 0;
+        const getErrorMessage = async () => {
+            // Create result with id 0
+            const result = await mockRedditResult(tempDir, 1);
+            result.data.children[0].data.id = '0';
 
-        // Mock api
-        fetch.mockResolvedValue(
-            new Promise((resolve) =>
-                resolve({
+            // Mock api
+            mockedFetch.mockImplementationOnce(() => Promise.resolve({
                     json: () =>
                         new Promise((resolveJSON) => resolveJSON(result)),
-                })
-            )
-        );
-        const getErrorMessage = async () => {
+                } as Response)
+            );
+
             try {
                 // previous id is 0 and api id 0 so no new wallpaper is found. Timeout of 0 millis to paginate
-                await online([{ id: 0 }], null, null, null, 0);
+                await online([{ id: '0' }], null, null, null, 0);
             } catch (error) {
                 return error.message;
             }

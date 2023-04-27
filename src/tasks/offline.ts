@@ -2,13 +2,13 @@ import {
     IMAGE_PATH,
     PREVIOUS_FILEPATH,
     REDDIT_CLIENT_BASE_URL,
-} from '../helpers/constants.js';
-import { flash, setGlobal, setWallpaper } from '../Tasker.js';
+} from '../helpers/constants';
+import { flash, setGlobal, setWallpaper } from '../Tasker';
 import {
     getCachedWithIds,
     sendNotification,
     writePrevious,
-} from '../helpers/functions.js';
+} from '../helpers/functions';
 
 const offline = (
     previous,
@@ -31,7 +31,6 @@ const offline = (
     if (!cachedLast) {
         offline(nonnones);
     }
-
     setWallpaper(cachedLast.filePath);
     sendNotification(last.title, `${REDDIT_CLIENT_BASE_URL}${last.permalink}`);
     setGlobal('WallpaperPostUrl', `${REDDIT_CLIENT_BASE_URL}${last.permalink}`);

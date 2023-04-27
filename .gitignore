@@ -1,3 +1,4 @@
 Tasker
 node_modules
 .tmp
+coverage/

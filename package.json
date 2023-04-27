@@ -7,13 +7,14 @@
     "eslint": "eslint  --ignore-path .gitignore src/ tests/",
     "lint": "npm run eslint",
     "fix": "npm run eslint -- --fix",
-    "serve": "nodemon --watch src/ --exec \"npm run start\"",
+    "serve": "nodemon --watch src/ --ext \"ts,json\" --exec \"npm run start\"",
     "build": "webpack",
-    "test": "npm --experimental-vm-modules run jest",
-    "jest": "jest",
-    "tcs": "tcs --init"
+    "test": "npm run jest",
+    "jest": "jest"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.21.4",
+    "@jest/globals": "^29.5.0",
     "eslint": "^8.39.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.8.0",
@@ -23,6 +24,7 @@
     "nodemon": "^2.0.22",
     "prettier": "^2.8.8",
     "tcs": "^10.0.2",
+    "ts-jest": "^29.1.0",
     "typescript": "^5.0.4",
     "webpack": "^5.80.0",
     "webpack-cli": "^5.0.2"

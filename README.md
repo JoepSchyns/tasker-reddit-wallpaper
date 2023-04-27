@@ -214,7 +214,7 @@ Execute the following commands in the (new, empty) directory where you want to s
 - You can run `npm run test` to run all predefined tests.
 
 ### Configuration variables
-By changing the constants found in `src/helpers/constants.js` you can alter things such as: *subreddit*, *minimum resolution*, *reddit client*, etc.
+By changing the constants found in `src/helpers/constants.ts` you can alter things such as: *subreddit*, *minimum resolution*, *reddit client*, etc.
 
 ## Repository structure
 - `/dist/` contains files ready for use in Tasker.
