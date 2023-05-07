@@ -9,7 +9,9 @@ import {
     existsSync,
     readdirSync,
     appendFileSync,
+    mkdirSync,
 } from 'fs';
+import { dirname }  from 'path';
 import { GLOBALS_NAME, GLOBALS_VALUE } from '../types/tasker';
 
 export const shell = (
@@ -32,8 +34,11 @@ export const shell = (
 
 export const exit = () => console.info('Tasker exit');
 
-export const writeFile = (path: string, text: string, append = false) =>
+export const writeFile = (path: string, text: string, append = false) => {
+    mkdirSync(dirname(path), { recursive: true}); // Tasker creates folders
     (append ? appendFileSync : writeFileSync)(path, text);
+}
+    
 
 export const readFile = (path: string) => readFileSync(path);
 
@@ -90,7 +95,7 @@ export const setGlobal = (variable: GLOBALS_NAME, value: GLOBALS_VALUE) => {
         globals = {};
     }
     globals[variable] = value;
-    writeFileSync(GLOBALS_PATH, JSON.stringify(globals));
+    writeFile(GLOBALS_PATH, JSON.stringify(globals));
 };
 
 export const deleteFile = (
