@@ -137,4 +137,38 @@ describe('Device is online', () => {
             'Could not find new wallpaper within timeout'
         );
     });
+
+    test('Keep newest', async () => {
+        const {imagePath, apiPath, previousesFilePath} = await tempDirPromise;
+        // Mock previous.json
+        const previouses = mockPreviouses(
+            MAX_WALLPAPERS,
+        );
+
+        // Set timestamp 0...MAX_WALLPAPERS
+        previouses.map((p, i) => p.firstSeen = i);
+        
+        const redditResult = mockRedditResult(apiPath, 1)
+        // Mock api
+        mockedFetch.mockImplementation(() =>
+            Promise.resolve({
+                json: () => redditResult,
+            } as Response)
+        );
+
+        // Perform "online" task
+        const newPreviouses = await online(
+            JSON.parse(JSON.stringify(previouses)),
+            undefined,
+            imagePath,
+            previousesFilePath
+        );
+        const oldestPrevious = previouses[0];
+        // Oldest removed
+        expect(newPreviouses.find(np => np.id === oldestPrevious.id)).toBeUndefined();
+
+        // Newest present
+        const newestId = (await redditResult).data.children[0].data.id
+        expect(newPreviouses.find(np => np.id === newestId)).toBeDefined();
+    });
 });

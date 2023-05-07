@@ -178,10 +178,11 @@ const online = async (
     );
 
     // Save date displayed last
-    newWallpaper.displayedLast = Date.now();
+    newWallpaper.firstSeen = Date.now();
 
-    // Update previous list
-    previous.unshift(newWallpaper);
+    // Update previous list and remove oldest when longer than the max
+    previous.push(newWallpaper);
+    previous.sort((a,b) => b.firstSeen - a.firstSeen); // new to old
     previous.length = MAX_WALLPAPERS;
     writePrevious(previous, previousFilepath);
     return previous;
