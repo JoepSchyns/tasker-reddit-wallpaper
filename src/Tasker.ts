@@ -79,8 +79,7 @@ export const global = (variable: string) => {
                 ];
             } catch (e) {
                 console.info(
-                    `Global variable ${variable} is either not in the Tasker ecosystem, not implemented or a unset custom global`,
-                    e
+                    `Global variable ${variable} is either not in the Tasker ecosystem, not implemented or a unset custom global`
                 );
             }
     }
