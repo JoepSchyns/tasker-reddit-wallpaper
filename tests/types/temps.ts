@@ -1,0 +1,1 @@
+export type TempFolderStructure = {previousesFilePath: string, rootPath: string, apiPath: string, imagePath: string}

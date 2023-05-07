@@ -1,4 +1,4 @@
-import { mkdtemp, readdir, rm } from 'fs/promises';
+import { mkdtemp, readdir, rm} from 'fs/promises';
 import {
     describe,
     expect,
@@ -8,6 +8,7 @@ import {
     jest,
 } from '@jest/globals';
 import {
+    createTempDir,
     mockImages,
     mockPreviouses,
     mockRedditResult,
@@ -16,6 +17,7 @@ import { MAX_WALLPAPERS } from '../../src/helpers/constants';
 import { isImage } from '../../src/helpers/functions';
 import online from '../../src/tasks/online';
 import { POST, POST as STORAGE_POST } from '../../types/storage';
+import { TempFolderStructure } from '../types/temps';
 
 global.fetch = jest.fn() as (
     input: RequestInfo | URL,
@@ -25,22 +27,19 @@ const mockedFetch = jest.mocked(fetch);
 const info = jest.spyOn(console, 'info').mockImplementation(() => {});
 
 describe('Device is online', () => {
-    let tempDirPromise: Promise<string>;
+    let tempDirPromise: Promise<TempFolderStructure>;
 
     beforeEach(() => {
-        tempDirPromise = mkdtemp('temp-');
+        tempDirPromise = createTempDir();
     });
+
     afterEach(async () => {
         const tempDir = await tempDirPromise;
-        rm(tempDir, { recursive: true, force: true });
+        rm(tempDir.rootPath, { recursive: true, force: true });
     });
 
     test('Reddit online', async () => {
-        // Listen to console.info
-
-        const tempDir = await tempDirPromise;
-        const imagePath = `${tempDir}/images`;
-        const previousesFilePath = `${tempDir}/test.json`;
+        const {imagePath, apiPath, previousesFilePath} = await tempDirPromise;
 
         await mockImages(imagePath, 10);
 
@@ -55,7 +54,7 @@ describe('Device is online', () => {
         // Mock api
         mockedFetch.mockImplementation(() =>
             Promise.resolve({
-                json: () => mockRedditResult(tempDir, 1),
+                json: () => mockRedditResult(apiPath, 1),
             } as Response)
         );
 
@@ -105,11 +104,11 @@ describe('Device is online', () => {
     });
 
     test('No new wallpaper could be found', async () => {
-        const tempDir = await tempDirPromise;
+        const { apiPath } = await tempDirPromise;
 
         const getErrorMessage = async () => {
             // Create result with id '0'
-            const result = await mockRedditResult(tempDir, 1);
+            const result = await mockRedditResult(apiPath, 1);
             result.data.children[0].data.id = '0';
 
             // Mock api

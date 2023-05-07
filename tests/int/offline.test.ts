@@ -7,26 +7,26 @@ import {
     afterEach,
     jest,
 } from '@jest/globals';
-import { mockImages, mockPreviouses } from '../helpers/functions';
+import { createTempDir, mockImages, mockPreviouses } from '../helpers/functions';
 import offline from '../../src/tasks/offline';
+import { TempFolderStructure } from '../types/temps';
 
 const info = jest.spyOn(console, 'info').mockImplementation(() => {});
 
 describe('Device is offline', () => {
-    let tempDirPromise: Promise<string>;
+    let tempDirPromise: Promise<TempFolderStructure>;
 
     beforeEach(() => {
-        tempDirPromise = mkdtemp('temp-');
+        tempDirPromise = createTempDir();
     });
+    
     afterEach(async () => {
         const tempDir = await tempDirPromise;
-        rm(tempDir, { recursive: true, force: true });
+        rm(tempDir.rootPath, { recursive: true, force: true });
     });
 
     test('Wallpapers available', async () => {
-        const tempDir = await tempDirPromise;
-        const imagePath = `${tempDir}/images`;
-        const previousesfilePath = `${tempDir}/test.json`;
+        const {imagePath, previousesFilePath} = await tempDirPromise;
 
         await mockImages(imagePath, 10);
 
@@ -42,7 +42,7 @@ describe('Device is offline', () => {
         const newPreviouses = await offline(
             [...previouses],
             imagePath,
-            previousesfilePath
+            previousesFilePath
         );
 
         // console.info('Wallpaper set', filePath); mocks taskers implementation of setWallpaper
@@ -76,12 +76,10 @@ describe('Device is offline', () => {
     });
 
     test('No wallpapers available', async () => {
-        const tempDir = await tempDirPromise;
-        const imagePath = `${tempDir}/images`;
-        const previousesfilePath = `${tempDir}/test.json`;
+        const {imagePath, previousesFilePath} = await tempDirPromise;
 
         // Perform "offline" task
-        await offline([], imagePath, previousesfilePath);
+        await offline([], imagePath, previousesFilePath);
 
         // console.info(str); mocks taskers implementation of flash
         // Test if alleast one call to console.info contained "Could not set offline wallpaper" in te first argument

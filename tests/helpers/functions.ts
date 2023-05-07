@@ -1,7 +1,9 @@
-import { stat, mkdir, writeFile } from 'fs/promises';
+import { stat, mkdir, writeFile, mkdtemp } from 'fs/promises';
 import { MIN_HEIGHT, MIN_WIDTH } from '../../src/helpers/constants';
 import { API_RESPONSE } from '../../types/reddit-api';
 import { POST } from '../../types/storage';
+import { join } from 'path';
+import { TempFolderStructure } from '../types/temps';
 
 const randomString = () => Math.random().toString(36).slice(2);
 
@@ -46,11 +48,10 @@ export const mockPreviouses = (
 };
 
 export const mockRedditResult = async (
-    tempDir: string,
+    apiDir: string,
     amount: number,
     fileTypes = ['jpg', 'png', 'jpeg']
 ): Promise<API_RESPONSE> => {
-    const apiDir = `${tempDir}/api`;
     const files = await mockImages(apiDir, amount, fileTypes);
     return {
         kind: 'Listing',
@@ -78,3 +79,12 @@ export const mockRedditResult = async (
         },
     };
 };
+
+export async function createTempDir() : Promise<TempFolderStructure>{
+    const rootPath = await mkdtemp('temp-');
+    const imagePath = join(rootPath, 'images');
+    const apiPath = join(rootPath, 'api');
+    await Promise.all([mkdir(imagePath), mkdir(apiPath)]);
+    const previousesFilePath = `${rootPath}/test.json`;
+    return {previousesFilePath, rootPath, imagePath, apiPath};
+}
