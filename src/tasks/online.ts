@@ -132,10 +132,10 @@ const downloadImage = async (
 
 const online = async (
     previous: Array<STORAGE_POST> = [],
+    endTime: EpochTimeStamp,
     after?: API_RESPONSE['data']['after'],
     imagePath = IMAGE_PATH,
     previousFilepath = PREVIOUS_FILEPATH,
-    endTime: EpochTimeStamp | null = null
 ): Promise<Array<STORAGE_POST>> => {
     // GET previously used wallpapers and new current on reddit
     const [nextAfter, current] = await getWallpaperPosts(after);
@@ -148,16 +148,15 @@ const online = async (
                     prevWallpaper && prevWallpaper.id === wallpaper.id
             )
     );
-
     // Paginate
     if (!newWallpaper) {
         if (!nextAfter) {
             throw new Error('Can not paginate without a after parameter');
         }
-        if (!!endTime && endTime >= Date.now()) {
+        if (endTime < Date.now()) {
             throw new Error('Could not find new wallpaper within timeout');
         }
-        return online(previous, nextAfter, imagePath, previousFilepath);
+        return online(previous, endTime, nextAfter, imagePath, previousFilepath);
     }
 
     // Get new wallpaper
@@ -197,13 +196,12 @@ const initOnline = async (
 ) => {
     console.log('Start online');
     const endtime = Date.now() + timeoutDuration;
-    const result = await online(
+    return online(
         previous,
+        endtime,
         after,
         imagePath,
         previousFilepath,
-        endtime
     );
-    return result;
 };
 export default initOnline;

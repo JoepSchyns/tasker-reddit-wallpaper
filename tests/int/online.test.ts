@@ -108,12 +108,12 @@ describe('Device is online', () => {
         const tempDir = await tempDirPromise;
 
         const getErrorMessage = async () => {
-            // Create result with id 0
+            // Create result with id '0'
             const result = await mockRedditResult(tempDir, 1);
             result.data.children[0].data.id = '0';
 
             // Mock api
-            mockedFetch.mockImplementationOnce(() =>
+            mockedFetch.mockImplementation(() =>
                 Promise.resolve({
                     json: () =>
                         new Promise((resolveJSON) => resolveJSON(result)),
@@ -121,7 +121,7 @@ describe('Device is online', () => {
             );
 
             try {
-                // previous id is 0 and api id 0 so no new wallpaper is found. Timeout of 0 millis to paginate
+                // previous id is '0' and api id 0 so no new wallpaper is found. Timeout of 0 millis to paginate
                 await online(
                     [{ id: '0' } as POST],
                     undefined,
