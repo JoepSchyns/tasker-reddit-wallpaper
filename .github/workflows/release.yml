@@ -5,16 +5,8 @@ on:
     branches: [ "master" ]
     
 jobs:
-  log:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Any Name Bash Test Step
-        shell: bash
-        run: |
-          echo "GH_REPO: $GH_REPO"
-          echo "GH_REPO_O: $GH_REPO_O"
-          echo "GH_T: $GH_T"
   test:
     uses: JoepSchyns/tasker-reddit-wallpaper/.github/workflows/test.yml@master
-        
-#     - uses: JoepSchyns/tasker-reddit-wallpaper/.github/workflows/build.yml@master
+  build:
+    needs: test
+    uses: JoepSchyns/tasker-reddit-wallpaper/.github/workflows/build.yml@master
