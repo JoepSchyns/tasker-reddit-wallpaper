@@ -18,14 +18,19 @@ jobs:
 
       contents: write
     steps:
+      - name: Download release artifact
 
-    - uses: actions/checkout@v3
+        uses: actions/download-artifact@v3
 
-    - uses: ncipollo/release-action@v1
+        with:
 
-      with:
-        artifactErrorsFailBuild: true 
-        allowUpdates: true
-        tag: v0.0.0
-        artifacts: release
+          name: release
+
+      - uses: ncipollo/release-action@v1
+
+        with:
+          artifactErrorsFailBuild: true 
+          allowUpdates: true
+          tag: v0.0.0
+          artifacts: release
 
