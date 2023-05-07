@@ -1,0 +1,12 @@
+name: Release 
+
+on:
+  push:
+    branches: [ "master" ]
+    
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: JoepSchyns/tasker-reddit-wallpaper/.github/workflows/test.yml@master
+    - uses: JoepSchyns/tasker-reddit-wallpaper/.github/workflows/build.yml@master
