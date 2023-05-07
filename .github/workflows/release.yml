@@ -27,5 +27,5 @@ jobs:
         artifactErrorsFailBuild: true 
         allowUpdates: true
         tag: v0.0.0
-        artifacts: "release"
+        artifacts: release
 
