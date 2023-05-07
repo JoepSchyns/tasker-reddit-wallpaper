@@ -9,6 +9,7 @@ module.exports = {
     lines: 100,
     statements: 100
   },
+  randomize: true,
   coveragePathIgnorePatterns : [
     "<rootDir>/src/helpers/constants.ts",
     "<rootDir>/src/Tasker.ts",
