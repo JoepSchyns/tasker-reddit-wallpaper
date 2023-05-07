@@ -14,23 +14,18 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
-    permissions:
 
-      contents: write
     steps:
-      - name: Download release artifact
-
+      - name: Download all artifacts
         uses: actions/download-artifact@v3
-
+ 
+      - name: Create a Release APK
+        uses: ncipollo/release-action@v1
         with:
-
-          name: release
-
-      - uses: ncipollo/release-action@v1
-
-        with:
+    
+          artifacts: "release/*.js"
           artifactErrorsFailBuild: true 
           allowUpdates: true
           tag: v0.0.0
-          artifacts: release
+     
 
