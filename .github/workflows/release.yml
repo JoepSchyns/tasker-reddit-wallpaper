@@ -6,7 +6,7 @@ on:
     
 jobs:
   test:
-    uses: JoepSchyns/asker-reddit-wallpaper/.github/workflows/test.yml@master
+    uses: JoepSchyns/tasker-reddit-wallpaper/.github/workflows/test.yml@master
   build:
     needs: test
     uses: JoepSchyns/tasker-reddit-wallpaper/.github/workflows/build.yml@master
