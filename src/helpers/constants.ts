@@ -5,7 +5,6 @@ const createGlobalIfNotExist = (
     name: GLOBALS_NAME,
     defaultValue: GLOBALS_VALUE
 ) => {
-    console.log(global, setGlobal);
     const value = global(name);
     if (!value) {
         setGlobal(name, defaultValue);
