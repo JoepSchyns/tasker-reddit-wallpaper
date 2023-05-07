@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "strictNullChecks": false,
-        "noImplicitAny": false,
+        "strictNullChecks": true,
+        "noImplicitAny": true,
         "outDir": "./built",
         "allowJs": true,
         "target": "es5"

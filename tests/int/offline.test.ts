@@ -1,11 +1,19 @@
-import { mockImages, mockPreviouses } from '../helpers/functions';
 import { mkdtemp, readdir, rm } from 'fs/promises';
+import {
+    describe,
+    expect,
+    test,
+    beforeEach,
+    afterEach,
+    jest,
+} from '@jest/globals';
+import { mockImages, mockPreviouses } from '../helpers/functions';
 import offline from '../../src/tasks/offline';
-import {describe, expect, test, beforeEach, afterEach, jest} from '@jest/globals';
-const info = jest.spyOn(console, "info").mockImplementation(() => {});
+
+const info = jest.spyOn(console, 'info').mockImplementation(() => {});
 
 describe('Device is offline', () => {
-    let tempDirPromise;
+    let tempDirPromise: Promise<string>;
 
     beforeEach(() => {
         tempDirPromise = mkdtemp('temp-');
@@ -17,8 +25,8 @@ describe('Device is offline', () => {
 
     test('Wallpapers available', async () => {
         const tempDir = await tempDirPromise;
-        const imagePath = tempDir + '/images';
-        const previousesfilePath = tempDir + '/test.json';
+        const imagePath = `${tempDir}/images`;
+        const previousesfilePath = `${tempDir}/test.json`;
 
         await mockImages(imagePath, 10);
 
@@ -50,7 +58,7 @@ describe('Device is offline', () => {
 
         // Test if newly set wallpaper was at the back of the queue
         expect(
-            wallpapersetArgs
+            wallpapersetArgs!
                 .join()
                 .includes(previouses[previouses.length - 1].id)
         ).toBeTruthy();
@@ -69,8 +77,8 @@ describe('Device is offline', () => {
 
     test('No wallpapers available', async () => {
         const tempDir = await tempDirPromise;
-        const imagePath = tempDir + '/images';
-        const previousesfilePath = tempDir + '/test.json';
+        const imagePath = `${tempDir}/images`;
+        const previousesfilePath = `${tempDir}/test.json`;
 
         // Perform "offline" task
         await offline([], imagePath, previousesfilePath);

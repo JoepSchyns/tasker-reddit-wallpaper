@@ -1,18 +1,15 @@
-import { deleteFile, exit, flash, global } from './Tasker';
+import { exit, flash, global } from './Tasker';
 import {
-    getCachedWithIds,
+    cleanCached,
     readOrCreatePrevious,
     sendNotification,
 } from './helpers/functions';
 import offline from './tasks/offline';
 import online from './tasks/online';
 
-const cleanCached = (previous) =>
-    getCachedWithIds()
-        .filter(({ id }) => !previous.find((post) => post && post.id === id))
-        .forEach(({ filePath }) => deleteFile(filePath));
-
-// Main function
+/**
+ * Main loop
+ */
 (async () => {
     try {
         sendNotification('Updating wallpaper...');
@@ -21,7 +18,7 @@ const cleanCached = (previous) =>
         const previous = readOrCreatePrevious();
 
         // Check if phone is connected to Wifi and run either off or online
-        const [_, group] = global('%WIFII').match(/>>> (.+) <<</);
+        const [, group] = global('%WIFII').match(/>>> (.+) <<</);
 
         const newPrevious = await (!global('sdk') &&
             process.argv.includes('--online')

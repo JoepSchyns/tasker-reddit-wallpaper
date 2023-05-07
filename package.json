@@ -4,7 +4,7 @@
   },
   "scripts": {
     "start": "ts-node ./src/index.ts",
-    "eslint": "eslint  --ignore-path .gitignore src/ tests/",
+    "eslint": "eslint  --ext .ts --ignore-path .gitignore src/",
     "lint": "npm run eslint",
     "fix": "npm run eslint -- --fix",
     "serve": "nodemon --watch src/ --ext \"ts,json\" --exec \"npm run start\"",
@@ -15,10 +15,11 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.21.4",
     "@jest/globals": "^29.5.0",
-    "eslint": "^8.39.0",
-    "eslint-config-airbnb-base": "^15.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "@typescript-eslint/parser": "^5.59.2",
+    "eslint": "^8.40.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
     "jest": "^29.5.0",
     "nodemon": "^2.0.22",

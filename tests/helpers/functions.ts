@@ -1,14 +1,15 @@
+import { stat, mkdir, writeFile } from 'fs/promises';
 import { MIN_HEIGHT, MIN_WIDTH } from '../../src/helpers/constants';
-import {stat, mkdir, writeFile} from 'fs/promises';
-import { API_RESPONSE } from '../../types/reddit-api'
+import { API_RESPONSE } from '../../types/reddit-api';
+import { POST } from '../../types/storage';
 
 const randomString = () => Math.random().toString(36).slice(2);
 
 export const mockImages = async (
-    path,
-    amount,
+    path: string,
+    amount: number,
     fileTypes = ['jpg', 'png', 'jpeg']
-) => {
+): Promise<Array<string>> => {
     if (!(await stat(path).catch(() => false))) {
         await mkdir(path);
     }
@@ -23,10 +24,12 @@ export const mockImages = async (
     );
 };
 
-export const mockPreviouses = (sizeOrIds) => {
+export const mockPreviouses = (
+    sizeOrIds: number | Array<string>
+): Array<POST> => {
     const MOCK = 'Added by helpers.test';
 
-    const ids = isNaN(sizeOrIds)
+    const ids = Array.isArray(sizeOrIds)
         ? sizeOrIds
         : [...Array(sizeOrIds)].map(() => randomString());
 
@@ -38,15 +41,16 @@ export const mockPreviouses = (sizeOrIds) => {
         width: MIN_WIDTH,
         height: MIN_HEIGHT,
         displayedLast: 0,
+        firstSeen: 0,
     }));
 };
 
 export const mockRedditResult = async (
-    tempDir,
-    amount,
+    tempDir: string,
+    amount: number,
     fileTypes = ['jpg', 'png', 'jpeg']
 ): Promise<API_RESPONSE> => {
-    const apiDir = tempDir + '/api';
+    const apiDir = `${tempDir}/api`;
     const files = await mockImages(apiDir, amount, fileTypes);
     return {
         kind: 'Listing',

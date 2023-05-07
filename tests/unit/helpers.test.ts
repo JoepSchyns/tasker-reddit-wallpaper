@@ -1,3 +1,12 @@
+import { mkdtemp, rm, writeFile, readFile } from 'fs/promises';
+import {
+    describe,
+    expect,
+    test,
+    beforeEach,
+    afterEach,
+    jest,
+} from '@jest/globals';
 import {
     getCachedWithIds,
     readOrCreatePrevious,
@@ -5,10 +14,8 @@ import {
     writePrevious,
 } from '../../src/helpers/functions';
 import { mockImages, mockPreviouses } from '../helpers/functions';
-import { mkdtemp, rm, writeFile, readFile } from 'fs/promises';
-import {describe, expect, test, beforeEach, afterEach, jest} from '@jest/globals';
 
-const info = jest.spyOn(console, "info").mockImplementation(() => {});
+const info = jest.spyOn(console, 'info').mockImplementation((...args) => console.log("mocked console.log", ...args));
 
 describe('Notification', () => {
     test('Send', () => {
@@ -28,7 +35,7 @@ describe('Notification', () => {
     });
 });
 describe('Handle files', () => {
-    let tempDirPromise;
+    let tempDirPromise: Promise<string>;
 
     beforeEach(() => {
         tempDirPromise = mkdtemp('temp-');
@@ -58,14 +65,16 @@ describe('Handle files', () => {
 
     test('Write previous', async () => {
         const tempDir = await tempDirPromise;
-        const previousesPath = tempDir + '/test.json';
+        const previousesPath = `${tempDir}/test.json`;
         await writePrevious(mockPreviouses(3), previousesPath);
-        const previouses = JSON.parse((await readFile(previousesPath)).toString());
+        const previouses = JSON.parse(
+            (await readFile(previousesPath)).toString()
+        );
         expect(previouses.length).toBe(3);
     });
     test('Create empty previous', async () => {
         const tempDir = await tempDirPromise;
-        const previousesPath = tempDir + '/test.json';
+        const previousesPath = `${tempDir}/test.json`;
 
         const previouses = readOrCreatePrevious(previousesPath);
 
@@ -74,7 +83,7 @@ describe('Handle files', () => {
 
     test('Read previous', async () => {
         const tempDir = await tempDirPromise;
-        const previousesPath = tempDir + '/test.json';
+        const previousesPath = `${tempDir}/test.json`;
 
         await writeFile(previousesPath, JSON.stringify(mockPreviouses(1)));
         const previouses = readOrCreatePrevious(previousesPath);
@@ -84,7 +93,7 @@ describe('Handle files', () => {
 
     test('Sort previous', async () => {
         const tempDir = await tempDirPromise;
-        const previousesPath = tempDir + '/test.json';
+        const previousesPath = `${tempDir}/test.json`;
 
         // Write a randomly sorted mock previouses
         await writeFile(
@@ -110,13 +119,13 @@ describe('Handle files', () => {
 
     test('No duplicates in previous', async () => {
         const tempDir = await tempDirPromise;
-        const previousesPath = tempDir + '/test.json';
+        const previousesPath = `${tempDir}/test.json`;
 
         // Write previouses with the same id
         await writeFile(
             previousesPath,
             JSON.stringify(
-                mockPreviouses(5).map((p, index) => ({ ...p, id: 0 }))
+                mockPreviouses(5).map((p) => ({ ...p, id: 0 }))
             )
         );
         const previouses = readOrCreatePrevious(previousesPath);

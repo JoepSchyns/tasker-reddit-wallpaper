@@ -1,6 +1,10 @@
 import { global, setGlobal } from '../Tasker';
+import { GLOBALS_VALUE, GLOBALS_NAME } from '../../types/tasker';
 
-const createGlobalIfNotExist = (name, defaultValue) => {
+const createGlobalIfNotExist = (
+    name: GLOBALS_NAME,
+    defaultValue: GLOBALS_VALUE
+) => {
     console.log(global, setGlobal);
     const value = global(name);
     if (!value) {
@@ -15,8 +19,8 @@ export const MAX_WALLPAPERS = createGlobalIfNotExist(
     '%WallpaperMaxWallpapers',
     1000
 );
-export const PREVIOUS_FILEPATH = TASKER_PATH + '/wallpaper/previous.json';
-export const IMAGE_PATH = TASKER_PATH + '/wallpaper/images';
+export const PREVIOUS_FILEPATH = `${TASKER_PATH}/wallpaper/previous.json`;
+export const IMAGE_PATH = `${TASKER_PATH}/wallpaper/images`;
 export const REDDIT_CLIENT_BASE_URL = createGlobalIfNotExist(
     '%WallpaperClientBaseUrl',
     'https://www.troddit.com'
