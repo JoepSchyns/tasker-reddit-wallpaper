@@ -21,5 +21,5 @@ jobs:
     - name: Archive production artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: index.min.js
+        name: release
         path: dist/index.min.js
