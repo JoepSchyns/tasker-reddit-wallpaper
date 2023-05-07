@@ -14,6 +14,7 @@ jobs:
           echo "GH_REPO: $GH_REPO"
           echo "GH_REPO_O: $GH_REPO_O"
           echo "GH_T: $GH_T"
+      - name: Test
+        uses: JoepSchyns/tasker-reddit-wallpaper/.github/workflows/test.yml@master
         
-#     - uses: JoepSchyns/tasker-reddit-wallpaper/.github/workflows/test.yml@master
 #     - uses: JoepSchyns/tasker-reddit-wallpaper/.github/workflows/build.yml@master
