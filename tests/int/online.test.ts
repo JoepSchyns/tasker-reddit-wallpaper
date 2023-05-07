@@ -88,8 +88,8 @@ describe('Device is online', () => {
 
         // Test if new entry contains all required values
         const newPrevious = newPreviouses.find(
-            (newPrevious_) =>
-                !previouses.find((previous) => previous === newPrevious_)
+            ({id: newId}) =>
+                !previouses.find(({id: prevId}) => newId === prevId)
         );
         expect(downloaded).toBeDefined();
         expect(newPrevious).toBeDefined();
