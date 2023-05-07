@@ -24,6 +24,6 @@ jobs:
     - uses: ncipollo/release-action@v1
 
       with:
-        tag: ${{ github.head_ref }}
+        tag: v0.0.0
         artifacts: "release"
 
