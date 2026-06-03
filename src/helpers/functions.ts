@@ -1,4 +1,4 @@
-import { IMAGE_PATH, PREVIOUS_FILEPATH } from './constants';
+import { IMAGE_PATH, PREVIOUS_FILEPATH, REDDIT_USER_AGENT, REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET } from './constants';
 import {
     listFiles,
     performTask,
@@ -7,6 +7,30 @@ import {
     deleteFile,
 } from '../Tasker';
 import { POST as STORAGE_POST } from '../../types/storage';
+
+
+export const redditFetch = async (endpoint: string, options: RequestInit = {}): Promise<Response> =>  {
+  const tokenResponse = await fetch('https://www.reddit.com/api/v1/access_token', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Basic ${btoa(`${REDDIT_CLIENT_ID}:${REDDIT_CLIENT_SECRET}`)}`,
+      'User-Agent': REDDIT_USER_AGENT,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: 'grant_type=client_credentials',
+  });
+
+  const { access_token } = (await tokenResponse.json()) as { access_token: string };
+
+  const cleanPath = endpoint.replace(/^(https?:\/\/)?(www\.)?(oauth\.)?reddit\.com\/?/, '').replace(/^\//, '');
+  const url = `https://oauth.reddit.com/${cleanPath}`;
+
+  const headers = new Headers(options.headers);
+  headers.set('Authorization', `Bearer ${access_token}`);
+  headers.set('User-Agent', REDDIT_USER_AGENT);
+
+  return fetch(url, { ...options, headers });
+}
 
 export const isImage = (name: string) =>
     RegExp('.(jpg|png|jpeg)$', 'i').test(name);

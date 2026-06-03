@@ -24,9 +24,13 @@ export const REDDIT_CLIENT_BASE_URL = createGlobalIfNotExist(
     '%WallpaperClientBaseUrl',
     'https://www.troddit.com'
 );
+export const REDDIT_USER_AGENT = 'script:wallpaper-scraper:v1.0'
+export const REDDIT_CLIENT_SECRET = createGlobalIfNotExist('%WallpaperRedditClientSecret', '');
+export const REDDIT_CLIENT_ID = createGlobalIfNotExist('%WallpaperRedditClientId', '');
 export const REDDIT_WALLPAPER_SOURCE_URL = createGlobalIfNotExist(
     '%WallpaperRedditSourceUrl',
     'https://reddit.com/r/art.json'
 );
 export const MIN_WIDTH = createGlobalIfNotExist('%WallpaperMinWidth', 1080);
 export const MIN_HEIGHT = createGlobalIfNotExist('%WallpaperMinHeight', 1920);
+export const ANDROID_ROOT_MOUNT = createGlobalIfNotExist('%WallpaperAndroidRootMount', '/storage/emulated/0');

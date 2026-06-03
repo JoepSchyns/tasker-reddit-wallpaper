@@ -6,9 +6,10 @@ import {
     PREVIOUS_FILEPATH,
     REDDIT_CLIENT_BASE_URL,
     REDDIT_WALLPAPER_SOURCE_URL,
+    ANDROID_ROOT_MOUNT
 } from '../helpers/constants';
 import { setGlobal, setWallpaper, shell } from '../Tasker';
-import { isImage, sendNotification, writePrevious } from '../helpers/functions';
+import { isImage, sendNotification, writePrevious, redditFetch } from '../helpers/functions';
 import { POST as STORAGE_POST } from '../../types/storage';
 import { API_RESPONSE, POST as REDDIT_POST } from '../../types/reddit-api';
 
@@ -18,7 +19,7 @@ const isLargeEnough = ({ width, height }: { width: number; height: number }) =>
 const getWallpaperPosts = async (
     after?: API_RESPONSE['data']['after']
 ): Promise<[API_RESPONSE['data']['after'], Array<STORAGE_POST>]> => {
-    const request = await fetch(
+    const request = await redditFetch(
         `${REDDIT_WALLPAPER_SOURCE_URL}?limit=100${
             after ? `&after=${after}` : ''
         }`
@@ -87,7 +88,7 @@ const getWallpaperBase64 = (
             if (!base64) {
                 throw new Error('Base64 is not generated');
             }
-            const command = `echo '${base64}' | base64 -d > /storage/emulated/0/${filePath} && echo done`;
+            const command = `echo '${base64}' | base64 -d > ${ANDROID_ROOT_MOUNT}${filePath} && echo done`;
             const r = shell(command, false, 45);
             if (!r) {
                 return reject(
@@ -105,7 +106,7 @@ const getWallpaperCurl = (
     url: REDDIT_POST['data']['url'],
     filePath: string
 ) => {
-    const command = `cd /storage/emulated/0 && curl -L -f -o "${filePath}" "${url}" && echo done`;
+    const command = `cd ${ANDROID_ROOT_MOUNT} && curl -L -f -o "${filePath}" "${url}" && echo done`;
     const r = shell(command, false, 45);
     if (!r) {
         throw new Error(
@@ -182,8 +183,10 @@ const online = async (
 
     // Update previous list and remove oldest when longer than the max
     previous.push(newWallpaper);
-    previous.sort((a,b) => b.firstSeen - a.firstSeen); // new to old
+    previous.sort((a, b) => (!a ? 1 : !b ? -1 : b.firstSeen - a.firstSeen)) // new to old
+    
     previous.length = MAX_WALLPAPERS;
+
     writePrevious(previous, previousFilepath);
     return previous;
 };
