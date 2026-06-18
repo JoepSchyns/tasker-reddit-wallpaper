@@ -20,14 +20,15 @@ import online from './tasks/online';
         // Check if phone is connected to Wifi and run either off or online
         const [, group] = global('%WIFII').match(/>>> (.+) <<</);
 
-        const newPrevious = await (!global('sdk') &&
-            process.argv.includes('--online')
-            ? online
-            : !global('sdk') && process.argv.includes('--offline')
-            ? offline
-            : group === 'CONNECTION'
-            ? online
-            : offline)(previous);
+        const newPrevious = await (
+            !global('sdk') && process.argv.includes('--online')
+                ? online
+                : !global('sdk') && process.argv.includes('--offline')
+                  ? offline
+                  : group === 'CONNECTION'
+                    ? online
+                    : offline
+        )(previous);
 
         // Remove wallpapers from cache
         cleanCached(newPrevious);

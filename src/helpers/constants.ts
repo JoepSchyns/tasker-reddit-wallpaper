@@ -3,7 +3,7 @@ import { GLOBALS_VALUE, GLOBALS_NAME } from '../../types/tasker';
 
 const createGlobalIfNotExist = (
     name: GLOBALS_NAME,
-    defaultValue: GLOBALS_VALUE
+    defaultValue: GLOBALS_VALUE,
 ) => {
     const value = global(name);
     if (!value) {
@@ -16,21 +16,30 @@ const createGlobalIfNotExist = (
 export const TASKER_PATH = 'Tasker';
 export const MAX_WALLPAPERS = createGlobalIfNotExist(
     '%WallpaperMaxWallpapers',
-    1000
+    1000,
 );
 export const PREVIOUS_FILEPATH = `${TASKER_PATH}/wallpaper/previous.json`;
 export const IMAGE_PATH = `${TASKER_PATH}/wallpaper/images`;
 export const REDDIT_CLIENT_BASE_URL = createGlobalIfNotExist(
     '%WallpaperClientBaseUrl',
-    'https://www.troddit.com'
+    'https://www.troddit.com',
 );
-export const REDDIT_USER_AGENT = 'script:wallpaper-scraper:v1.0'
-export const REDDIT_CLIENT_SECRET = createGlobalIfNotExist('%WallpaperRedditClientSecret', '');
-export const REDDIT_CLIENT_ID = createGlobalIfNotExist('%WallpaperRedditClientId', '');
+export const REDDIT_USER_AGENT = 'script:wallpaper-scraper:v1.0';
+export const REDDIT_CLIENT_SECRET = createGlobalIfNotExist(
+    '%WallpaperRedditClientSecret',
+    '',
+);
+export const REDDIT_CLIENT_ID = createGlobalIfNotExist(
+    '%WallpaperRedditClientId',
+    '',
+);
 export const REDDIT_WALLPAPER_SOURCE_URL = createGlobalIfNotExist(
     '%WallpaperRedditSourceUrl',
-    'https://reddit.com/r/art.json'
+    'https://reddit.com/r/art.json',
 );
 export const MIN_WIDTH = createGlobalIfNotExist('%WallpaperMinWidth', 1080);
 export const MIN_HEIGHT = createGlobalIfNotExist('%WallpaperMinHeight', 1920);
-export const ANDROID_ROOT_MOUNT = createGlobalIfNotExist('%WallpaperAndroidRootMount', '/storage/emulated/0');
+export const ANDROID_ROOT_MOUNT = createGlobalIfNotExist(
+    '%WallpaperAndroidRootMount',
+    '/storage/emulated/0',
+);

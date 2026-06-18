@@ -12,10 +12,10 @@ import {
 import { POST as STORAGE_POST } from '../../types/storage';
 
 const offline = (
-    previous: Array<STORAGE_POST>,
+    previous: STORAGE_POST[],
     imagePath = IMAGE_PATH,
-    previousFilePath = PREVIOUS_FILEPATH
-): Array<STORAGE_POST> => {
+    previousFilePath = PREVIOUS_FILEPATH,
+): STORAGE_POST[] => {
     console.log('Start offline');
 
     const cached = getCachedWithIds(imagePath);

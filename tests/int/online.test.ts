@@ -129,7 +129,7 @@ describe('Device is online', () => {
                     0
                 );
             } catch (error) {
-                return error.message;
+                return (error as Error).message;
             }
             return null;
         };

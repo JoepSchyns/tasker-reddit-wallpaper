@@ -11,13 +11,13 @@ import {
     appendFileSync,
     mkdirSync,
 } from 'fs';
-import { dirname }  from 'path';
+import { dirname } from 'path';
 import { GLOBALS_NAME, GLOBALS_VALUE } from '../types/tasker';
 
 export const shell = (
     command: string,
     root: boolean,
-    timeoutSeconds: number
+    timeoutSeconds: number,
 ) => {
     command = command.replace(/\/storage\/emulated\/0\/?/g, './');
 
@@ -35,10 +35,9 @@ export const shell = (
 export const exit = () => console.info('Tasker exit');
 
 export const writeFile = (path: string, text: string, append = false) => {
-    mkdirSync(dirname(path), { recursive: true}); // Tasker creates folders
+    mkdirSync(dirname(path), { recursive: true }); // Tasker creates folders
     (append ? appendFileSync : writeFileSync)(path, text);
-}
-    
+};
 
 export const readFile = (path: string) => readFileSync(path);
 
@@ -79,7 +78,7 @@ export const global = (variable: string) => {
                 ];
             } catch (e) {
                 console.info(
-                    `Global variable ${variable} is either not in the Tasker ecosystem, not implemented or a unset custom global`
+                    `Global variable ${variable} is either not in the Tasker ecosystem, not implemented or a unset custom global`,
                 );
             }
     }
@@ -100,7 +99,7 @@ export const setGlobal = (variable: GLOBALS_NAME, value: GLOBALS_VALUE) => {
 export const deleteFile = (
     filePath: string,
     shredTimes?: number,
-    useRoot?: boolean
+    useRoot?: boolean,
 ) => unlinkSync(filePath.replace(/\/storage\/emulated\/0\/?/g, './'));
 
 export const listFiles = (dirPath: string, hiddenToo?: boolean) => {
@@ -109,7 +108,7 @@ export const listFiles = (dirPath: string, hiddenToo?: boolean) => {
             .map((d) => `/storage/emulated/0/${dirPath}/${d}`)
             .join('\n');
     }
-    // eslint-disable-next-line no-undefined
+
     return undefined;
 };
 
@@ -129,14 +128,14 @@ export const performTask = (
     taskName: string,
     priority?: number,
     parameterOne?: string,
-    parameterTwo?: string
+    parameterTwo?: string,
 ) => {
     console.info(
         'Perform task',
         taskName,
         priority,
         parameterOne,
-        parameterTwo
+        parameterTwo,
     );
     return 'true';
 };
@@ -157,7 +156,7 @@ export const alert = (
     a4?: any,
     a5?: any,
     a6?: any,
-    a7?: any
+    a7?: any,
 ) => {
     throw new Error('Function alert is not yet implemented');
 };
@@ -260,7 +259,7 @@ export const elemPosition = (
     a3?: any,
     a4?: any,
     a5?: any,
-    a6?: any
+    a6?: any,
 ) => {
     throw new Error('Function elemPosition is not yet implemented');
 };
@@ -295,7 +294,7 @@ export const enterKey = (
     a4?: any,
     a5?: any,
     a6?: any,
-    a7?: any
+    a7?: any,
 ) => {
     throw new Error('Function enterKey is not yet implemented');
 };
@@ -336,7 +335,7 @@ export const lock = (
     a4?: any,
     a5?: any,
     a6?: any,
-    a7?: any
+    a7?: any,
 ) => {
     throw new Error('Function lock is not yet implemented');
 };
@@ -380,7 +379,7 @@ export const parseFormatDateTime = (
     a4?: any,
     a5?: any,
     a6?: any,
-    a7?: any
+    a7?: any,
 ) => {
     throw new Error('Function parseFormatDateTime is not yet implemented');
 };
@@ -390,7 +389,7 @@ export const popup = (
     a3?: any,
     a4?: any,
     a5?: any,
-    a6?: any
+    a6?: any,
 ) => {
     throw new Error('Function popup is not yet implemented');
 };
@@ -423,7 +422,7 @@ export const say = (
     a5?: any,
     a6?: any,
     a7?: any,
-    a8?: any
+    a8?: any,
 ) => {
     throw new Error('Function say is not yet implemented');
 };
@@ -438,7 +437,7 @@ export const sendIntent = (
     a5?: any,
     a6?: any,
     a7?: any,
-    a8?: any
+    a8?: any,
 ) => {
     throw new Error('Function sendIntent is not yet implemented');
 };
@@ -481,7 +480,7 @@ export const showScene = (
     a3?: any,
     a4?: any,
     a5?: any,
-    a6?: any
+    a6?: any,
 ) => {
     throw new Error('Function showScene is not yet implemented');
 };

@@ -17,6 +17,7 @@ describe('Device is offline', () => {
     let tempDirPromise: Promise<TempFolderStructure>;
 
     beforeEach(() => {
+        info.mockClear();
         tempDirPromise = createTempDir();
     });
     

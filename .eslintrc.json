@@ -8,8 +8,7 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:import/recommended",
-    "airbnb-typescript/base",
+    "plugin:@typescript-eslint/stylistic",
     "plugin:prettier/recommended"
   ],
   "ignorePatterns": [".tests"],
