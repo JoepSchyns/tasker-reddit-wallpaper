@@ -190,6 +190,7 @@ const online = async (
     );
 
     // Save date displayed last
+    newWallpaper.displayedLast = Date.now();
     newWallpaper.firstSeen = Date.now();
 
     // Update previous list and remove oldest when longer than the max
