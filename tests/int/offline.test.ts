@@ -75,6 +75,39 @@ describe('Device is offline', () => {
         expect(newPreviouses.length - previouses.length === 0).toBeTruthy();
     });
 
+    test('Set wallpaper to the image that was viewed the longest time ago', async () => {
+        const {imagePath, previousesFilePath} = await tempDirPromise;
+
+        await mockImages(imagePath, 10);
+
+        // Get current wallpapers
+        const filesPrev = await readdir(imagePath);
+
+        // Mock previous.json
+        const previouses = mockPreviouses(
+            filesPrev.map((file) => file.split('.')[0])
+        );
+
+        // Set the displayedLast timestamp of the first image to a value that is older than the rest
+        previouses[0].displayedLast = 1;
+        for (let i = 1; i < previouses.length; i++) {
+            previouses[i].displayedLast = 2;
+        }
+
+        // Perform "offline" task
+        const newPreviouses = await offline(
+            [...previouses],
+            imagePath,
+            previousesFilePath
+        );
+
+        // Test if newly set wallpaper is now at the front of the queue
+        expect(newPreviouses[0].id).toBe(previouses[0].id);
+
+        // Test if timestamp is updated
+        expect(previouses[0].displayedLast).toBeGreaterThan(1);
+    });
+
     test('No wallpapers available', async () => {
         const {imagePath, previousesFilePath} = await tempDirPromise;
 

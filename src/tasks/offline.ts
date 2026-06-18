@@ -20,7 +20,9 @@ const offline = (
 
     const cached = getCachedWithIds(imagePath);
     // Get wallpaper displayed longest ago
-    const nonnones = previous.filter((p) => Boolean(p));
+    const nonnones = previous
+        .filter((p) => Boolean(p))
+        .sort((a, b) => b.displayedLast - a.displayedLast);
     if (cached.length === 0 || nonnones.length === 0) {
         flash('Could not set offline wallpaper with no cached images');
         return previous;
