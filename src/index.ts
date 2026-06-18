@@ -34,7 +34,7 @@ import online from './tasks/online';
         cleanCached(newPrevious);
     } catch (e) {
         console.error(e);
-        flash(e.toString());
+        flash((e as Error).toString());
     }
     exit();
 })();
